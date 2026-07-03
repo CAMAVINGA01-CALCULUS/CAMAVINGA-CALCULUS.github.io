@@ -162,6 +162,7 @@
             width: 100%; max-width: 260px; padding: 12px;
             border: 1px solid var(--border); border-radius: 8px;
             text-align: center; font-size: 16px; margin-bottom: 12px;
+            background: #ffffff; color: var(--accent-dark);
         }
         .lock-btn {
             background: var(--accent-dark); color: white; border: none;
@@ -185,6 +186,18 @@
             padding: 12px; border-radius: 6px; font-weight: 800; font-size: 15px; cursor: pointer; width: 100%; margin-top: 8px;
         }
 
+        /* --- Delete Post Engine Style --- */
+        .manage-box {
+            margin-top: 25px; padding-top: 20px; border-top: 1px dashed #334155;
+        }
+        .manage-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 13px;
+        }
+        .delete-btn {
+            background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: 700;
+        }
+
         /* --- Article Overlay Reader --- */
         .reader-view {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -201,6 +214,12 @@
         .close-btn {
             background: var(--accent-dark); color: white; border: none;
             padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px;
+        }
+
+        /* --- Offline Game --- */
+        #offlineOverlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #0d0d1a; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white;
         }
     </style>
 </head>
@@ -222,7 +241,7 @@
         </div>
     </header>
 
-    <div class="container">
+    <div class="container" id="portalView">
         <div id="tab-news" class="tab-content active">
             <div class="feed-grid" id="newsGrid"></div>
         </div>
@@ -252,6 +271,11 @@
                 </div>
                 <div class="form-group"><label>Narrative Breakdown</label><textarea id="postDesc" rows="3" placeholder="Deep details..."></textarea></div>
                 <button class="publish-btn" onclick="publishCard()">Publish Story Live</button>
+
+                <div class="manage-box">
+                    <h4 style="color:var(--accent-yellow); margin:0 0 10px 0;">Manage & Delete Stories</h4>
+                    <div id="deleteDashboardList"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -268,6 +292,13 @@
         </div>
     </div>
 
+    <div id="offlineOverlay">
+        <h2 style="color: #ff007f;">🔴 FIELD OFFLINE</h2>
+        <div style="font-size: 18px; margin-bottom: 12px;">Score: <span id="fallbackScore" style="color: #00ffcc;">0</span></div>
+        <canvas id="fallbackCanvas" width="300" height="400" style="background:#111122; border:2px solid #ff007f; max-width:100%;"></canvas>
+        <p style="color: #656e7b; font-size: 12px; margin-top:12px;">No network! Drag to guide your neon racer.</p>
+    </div>
+
 <script>
     // Set your admin access password right here sha!
     const ADMIN_PASSWORD = "tega"; 
@@ -277,6 +308,7 @@
         if(input === ADMIN_PASSWORD) {
             document.getElementById("lockGate").style.display = "none";
             document.getElementById("adminPanelDesk").style.display = "block";
+            renderDeleteDashboard();
         } else {
             alert("Unauthorized Pin Attempt!");
         }
@@ -289,7 +321,7 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
-            event.currentTarget.classList.add('active');
+            if(event) event.currentTarget.classList.add('active');
             loader.style.opacity = "0";
             setTimeout(() => { loader.style.display = "none"; }, 300);
         }, 300);
@@ -335,6 +367,20 @@
         });
     }
 
+    function renderDeleteDashboard() {
+        const listDiv = document.getElementById("deleteDashboardList");
+        listDiv.innerHTML = "";
+        database.forEach((post, index) => {
+            const row = document.createElement("div");
+            row.className = "manage-item";
+            row.innerHTML = `
+                <span>${post.title.substring(0, 35)}...</span>
+                <button class="delete-btn" onclick="deletePost(${index})">Remove</button>
+            `;
+            listDiv.appendChild(row);
+        });
+    }
+
     function publishCard() {
         const tag = document.getElementById("postTag").value || "News";
         const img = document.getElementById("postImage").value;
@@ -348,14 +394,24 @@
 
         database.push({ tag, img, title, home, score, away, desc });
         localStorage.setItem('tega_posts', JSON.stringify(database));
+        
         renderFeed();
+        renderDeleteDashboard();
 
-        // Clear input details
         document.getElementById("postTag").value = ""; document.getElementById("postImage").value = "";
         document.getElementById("postTitle").value = ""; document.getElementById("homeTeam").value = "";
         document.getElementById("scoreLine").value = ""; document.getElementById("awayTeam").value = "";
         document.getElementById("postDesc").value = "";
         switchTab('news');
+    }
+
+    function deletePost(index) {
+        if(confirm("Are you sure you want to completely delete this story?")) {
+            database.splice(index, 1);
+            localStorage.setItem('tega_posts', JSON.stringify(database));
+            renderFeed();
+            renderDeleteDashboard();
+        }
     }
 
     function openReader(index) {
@@ -375,6 +431,58 @@
             setTimeout(() => { loader.style.display = "none"; }, 300);
         }, 800);
     });
+
+    // Offline game engine trigger logic
+    function checkNetworkStatus() {
+        const portal = document.getElementById("portalView");
+        const fallback = document.getElementById("offlineOverlay");
+        if (navigator.onLine) {
+            portal.style.display = "block";
+            fallback.style.display = "none";
+        } else {
+            portal.style.display = "none";
+            fallback.style.display = "flex";
+            ignition();
+        }
+    }
+    window.addEventListener('online', checkNetworkStatus);
+    window.addEventListener('offline', checkNetworkStatus);
+
+    let activeArena = false;
+    function ignition() {
+        if(activeArena) return;
+        activeArena = true;
+        const cvs = document.getElementById("fallbackCanvas");
+        const cxx = cvs.getContext("2d");
+        const tracker = document.getElementById("fallbackScore");
+        let pts = 0; let carX = cvs.width/2; let targetCarX = carX; let trafficFleet = [];
+
+        cvs.addEventListener("touchmove", e => {
+            const boundary = cvs.getBoundingClientRect();
+            targetCarX = (e.touches[0].clientX - boundary.left) * (cvs.width / boundary.width);
+        });
+
+        function play() {
+            if(navigator.onLine) { activeArena = false; return; }
+            requestAnimationFrame(play);
+            cxx.clearRect(0,0,cvs.width,cvs.height);
+            carX += (targetCarX - carX) * 0.2;
+            cxx.fillStyle = "#facc15";
+            cxx.fillRect(carX-12, cvs.height-60, 24, 35);
+
+            if(Math.random() < 0.03 && trafficFleet.length < 3) {
+                trafficFleet.push({x: Math.random()*(cvs.width-30)+15, y: -50});
+            }
+            trafficFleet.forEach((enemy, idx) => {
+                enemy.y += 5;
+                cxx.fillStyle = "#ef4444";
+                cxx.fillRect(enemy.x, enemy.y, 24, 35);
+                if(enemy.y > cvs.height - 60 && enemy.y < cvs.height - 20 && Math.abs(enemy.x - carX) < 20) { pts = 0; enemy.y = -50; }
+                if(enemy.y > cvs.height) { trafficFleet.splice(idx, 1); pts += 10; tracker.innerText = pts; }
+            });
+        }
+        play();
+    }
 </script>
 </body>
 </html>
