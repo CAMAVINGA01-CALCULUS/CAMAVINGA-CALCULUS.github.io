@@ -165,6 +165,12 @@
         .form-group label { font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 600; }
         .form-group input, .form-group textarea { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; color: white; font-family: inherit; }
         .publish-btn { background: var(--accent-yellow); color: var(--accent-dark); border: none; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; width: 100%; }
+
+        /* --- Fallback Offline Canvas Screen --- */
+        #offlineOverlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #0f172a; z-index: 100000; flex-direction: column; align-items: center; justify-content: center; color: white;
+        }
     </style>
 </head>
 <body>
@@ -184,7 +190,7 @@
         </div>
     </header>
 
-    <div class="container">
+    <div class="container" id="portalView">
         <div id="tab-news" class="tab-content active"><div class="feed-grid" id="newsGrid"></div></div>
 
         <div id="tab-tactics" class="tab-content"><div class="feed-grid" id="tacticsGrid"></div></div>
@@ -224,6 +230,13 @@
                 <button class="publish-btn" onclick="publishCard()">Publish to Live Global Cloud</button>
             </div>
         </div>
+    </div>
+
+    <div id="offlineOverlay">
+        <h2 style="color: var(--accent-yellow);">🔴 FIELD OFFLINE</h2>
+        <div style="font-size: 18px; margin-bottom: 12px;">Score: <span id="fallbackScore" style="color: #00ffcc;">0</span></div>
+        <canvas id="fallbackCanvas" width="400" height="500" style="background:#111122; border:2px solid var(--accent-yellow); max-width: 90vw;"></canvas>
+        <p style="color: #656e7b; font-size: 13px; margin-top:12px;">No network detected! Drag or use mouse to guide your racer.</p>
     </div>
 
     <div class="reader-view" id="articleReader" onclick="closeReader(event)">
@@ -379,8 +392,65 @@
 
     function closeReader(e) { if(e.target.id === "articleReader") document.getElementById("articleReader").style.display = "none"; }
 
+    // --- Offline Arcade Mechanics ---
+    function checkNetworkStatus() {
+        const portal = document.getElementById("portalView");
+        const fallback = document.getElementById("offlineOverlay");
+        if (navigator.onLine) {
+            portal.style.display = "block";
+            fallback.style.display = "none";
+        } else {
+            portal.style.display = "none";
+            fallback.style.display = "flex";
+            ignition();
+        }
+    }
+    window.addEventListener('online', checkNetworkStatus);
+    window.addEventListener('offline', checkNetworkStatus);
+
+    let activeArena = false;
+    function ignition() {
+        if(activeArena) return;
+        activeArena = true;
+        const cvs = document.getElementById("fallbackCanvas");
+        const cxx = cvs.getContext("2d");
+        const tracker = document.getElementById("fallbackScore");
+        let pts = 0; let carX = cvs.width/2; let targetCarX = carX; let trafficFleet = [];
+
+        cvs.addEventListener("touchmove", e => {
+            const boundary = cvs.getBoundingClientRect();
+            targetCarX = (e.touches[0].clientX - boundary.left) * (cvs.width / boundary.width);
+        });
+        cvs.addEventListener("mousemove", e => {
+            const boundary = cvs.getBoundingClientRect();
+            targetCarX = (e.clientX - boundary.left) * (cvs.width / boundary.width);
+        });
+
+        function play() {
+            if(navigator.onLine) { activeArena = false; return; }
+            requestAnimationFrame(play);
+            cxx.clearRect(0,0,cvs.width,cvs.height);
+            carX += (targetCarX - carX) * 0.2;
+            cxx.fillStyle = "#facc15";
+            cxx.fillRect(carX-15, cvs.height-70, 30, 45);
+
+            if(Math.random() < 0.03 && trafficFleet.length < 3) {
+                trafficFleet.push({x: Math.random()*(cvs.width-40)+20, y: -60});
+            }
+            trafficFleet.forEach((enemy, idx) => {
+                enemy.y += 6;
+                cxx.fillStyle = "#ff007f";
+                cxx.fillRect(enemy.x, enemy.y, 30, 45);
+                if(enemy.y > cvs.height - 70 && enemy.y < cvs.height - 20 && Math.abs(enemy.x - carX) < 25) { pts = 0; enemy.y = -60; }
+                if(enemy.y > cvs.height) { trafficFleet.splice(idx, 1); pts += 10; tracker.innerText = pts; }
+            });
+        }
+        play();
+    }
+
     window.addEventListener('load', () => {
         setStar(5);
+        checkNetworkStatus();
         syncCloudData().then(() => {
             const loader = document.getElementById("preloader");
             loader.style.opacity = "0";
