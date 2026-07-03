@@ -28,14 +28,12 @@
             overflow-x: hidden;
         }
 
-        /* --- Loading Screen --- */
         #preloader {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: var(--bg-base);
             z-index: 99999;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             transition: opacity 0.3s ease;
@@ -45,13 +43,11 @@
             width: 50px; height: 50px;
             background: radial-gradient(circle at 30% 30%, #ffffff, #dcdcdc 50%, #444 100%);
             border-radius: 50%;
-            position: relative;
             animation: spinBall 1s infinite linear;
         }
 
         @keyframes spinBall { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- Top Header & Navigation --- */
         .flashy-header {
             background-color: var(--accent-dark);
             color: white;
@@ -81,11 +77,7 @@
         .tab-bar {
             display: flex;
             justify-content: center;
-            overflow-x: auto;
-            white-space: nowrap;
-            scrollbar-width: none;
         }
-        .tab-bar::-webkit-scrollbar { display: none; }
 
         .tab-btn {
             background: transparent; border: none;
@@ -100,7 +92,6 @@
             background: var(--accent-yellow);
         }
 
-        /* --- Main Layout Container --- */
         .container {
             width: 100%;
             max-width: 680px;
@@ -153,7 +144,6 @@
         }
         .match-strip .vs-score { color: #16a34a; background: #dcfce7; padding: 1px 6px; border-radius: 4px; }
 
-        /* --- Secure Locked Gate --- */
         .lock-screen {
             background: white; border: 1px solid var(--border);
             border-radius: 16px; padding: 40px 20px; text-align: center;
@@ -162,14 +152,12 @@
             width: 100%; max-width: 260px; padding: 12px;
             border: 1px solid var(--border); border-radius: 8px;
             text-align: center; font-size: 16px; margin-bottom: 12px;
-            background: #ffffff; color: var(--accent-dark);
         }
         .lock-btn {
             background: var(--accent-dark); color: white; border: none;
             padding: 12px 24px; font-weight: 700; border-radius: 8px; cursor: pointer;
         }
 
-        /* --- Responsive Form Panel --- */
         .admin-panel {
             background: var(--accent-dark); color: white;
             border-radius: 16px; padding: 20px; border: 1px solid var(--accent-yellow);
@@ -186,19 +174,10 @@
             padding: 12px; border-radius: 6px; font-weight: 800; font-size: 15px; cursor: pointer; width: 100%; margin-top: 8px;
         }
 
-        /* --- Delete Post Engine Style --- */
-        .manage-box {
-            margin-top: 25px; padding-top: 20px; border-top: 1px dashed #334155;
-        }
-        .manage-item {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 13px;
-        }
-        .delete-btn {
-            background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: 700;
+        .output-box {
+            margin-top: 20px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px dashed var(--accent-yellow);
         }
 
-        /* --- Article Overlay Reader --- */
         .reader-view {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 10000;
@@ -216,7 +195,6 @@
             padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px;
         }
 
-        /* --- Offline Game --- */
         #offlineOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #0d0d1a; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white;
@@ -225,15 +203,10 @@
 </head>
 <body>
 
-    <div id="preloader">
-        <div class="ball-loader"></div>
-    </div>
+    <div id="preloader"><div class="ball-loader"></div></div>
 
     <header class="flashy-header">
-        <div class="logo-box">
-            <div class="logo-icon">T</div>
-            <h1 class="logo-text">T.E.G.A<span>.</span></h1>
-        </div>
+        <div class="logo-box"><div class="logo-icon">T</div><h1 class="logo-text">T.E.G.A<span>.</span></h1></div>
         <div class="tab-bar">
             <button class="tab-btn active" onclick="switchTab('news')">News Feed</button>
             <button class="tab-btn" onclick="switchTab('tactics')">Tactics Desk</button>
@@ -243,38 +216,48 @@
 
     <div class="container" id="portalView">
         <div id="tab-news" class="tab-content active">
-            <div class="feed-grid" id="newsGrid"></div>
+            <div class="feed-grid" id="newsGrid">
+                
+                <div class="sub-card" onclick="openGlobalStory('Portugal reach Round of 16 after tactical turnaround', 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2', 'Tactics', 'Portugal', '2 - 1', 'Croatia', 'An in-depth review of the second-half spatial control adjustment. The midfield diamond structural pivot unlocked key passing vertical corridors.')">
+                    <div class="image-wrapper"><span class="badge">Tactics</span><img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2"></div>
+                    <div class="card-content">
+                        <h4 class="card-title">Portugal reach Round of 16 after tactical turnaround</h4>
+                        <p class="card-desc">An in-depth review of the second-half spatial control adjustment...</p>
+                        <div class="match-strip"><span>Portugal</span><span class="vs-score">2 - 1</span><span>Croatia</span></div>
+                    </div>
+                </div>
+
+                </div>
         </div>
 
         <div id="tab-tactics" class="tab-content">
-            <div class="feed-grid" id="tacticsGrid"></div>
+            <div class="feed-grid" id="tacticsGrid">
+                </div>
         </div>
 
         <div id="tab-creator" class="tab-content">
             <div id="lockGate" class="lock-screen">
-                <h3 style="margin-top:0; color:var(--accent-dark);">🔒 Admin Gate Protection</h3>
-                <p style="color:var(--text-secondary); font-size:13px; margin-bottom:20px;">Enter verification code to unlock publication rights.</p>
+                <h3 style="margin-top:0;">🔒 Admin Protection Gate</h3>
                 <input type="password" id="gatePassword" placeholder="Enter Admin Pin...">
-                <br>
-                <button class="lock-btn" onclick="verifyAdminGate()">Unlock Panel</button>
+                <br><button class="lock-btn" onclick="verifyAdminGate()">Unlock Panel</button>
             </div>
 
             <div id="adminPanelDesk" class="admin-panel" style="display: none;">
-                <h3>Publish New Card</h3>
+                <h3>Generate Global Post Asset Code</h3>
                 <div class="form-group"><label>Category Tag</label><input type="text" id="postTag" placeholder="Tactics or News"></div>
-                <div class="form-group"><label>Cover Image URL</label><input type="text" id="postImage" placeholder="Paste link..."></div>
-                <div class="form-group"><label>Headline Title</label><input type="text" id="postTitle" placeholder="Match breakdown summary..."></div>
+                <div class="form-group"><label>Cover Image URL</label><input type="text" id="postImage" placeholder="Image link..."></div>
+                <div class="form-group"><label>Headline Title</label><input type="text" id="postTitle" placeholder="Summary title..."></div>
                 <div class="form-row-3">
                     <div class="form-group"><label>Home</label><input type="text" id="homeTeam" placeholder="ARS"></div>
                     <div class="form-group"><label>Score</label><input type="text" id="scoreLine" placeholder="0 - 0"></div>
                     <div class="form-group"><label>Away</label><input type="text" id="awayTeam" placeholder="CHE"></div>
                 </div>
                 <div class="form-group"><label>Narrative Breakdown</label><textarea id="postDesc" rows="3" placeholder="Deep details..."></textarea></div>
-                <button class="publish-btn" onclick="publishCard()">Publish Story Live</button>
+                <button class="publish-btn" onclick="generateCodeBlock()">Generate Code Line</button>
 
-                <div class="manage-box">
-                    <h4 style="color:var(--accent-yellow); margin:0 0 10px 0;">Manage & Delete Stories</h4>
-                    <div id="deleteDashboardList"></div>
+                <div class="output-box" id="outputBox" style="display:none;">
+                    <p style="color:var(--accent-yellow); font-size:12px; margin:0 0 8px 0;">📋 Copy this text code block and paste it inside GitHub right below line 166:</p>
+                    <textarea id="codeResult" rows="6" style="width:100%; background:#0f172a; color:#a7f3d0; border:none; font-family:monospace; font-size:11px;" readonly></textarea>
                 </div>
             </div>
         </div>
@@ -293,238 +276,88 @@
     </div>
 
     <div id="offlineOverlay">
-        <h2 style="color: #ff007f;">🔴 FIELD OFFLINE</h2>
-        <div style="font-size: 18px; margin-bottom: 12px;">Score: <span id="fallbackScore" style="color: #00ffcc;">0</span></div>
-        <canvas id="fallbackCanvas" width="300" height="400" style="background:#111122; border:2px solid #ff007f; max-width:100%;"></canvas>
-        <p style="color: #656e7b; font-size: 12px; margin-top:12px;">No network! Drag to guide your neon racer.</p>
+        <h2 style="color:#ff007f;">🔴 FIELD OFFLINE</h2>
+        <div>Score: <span id="fallbackScore" style="color:#00ffcc;">0</span></div>
+        <canvas id="fallbackCanvas" width="300" height="400" style="background:#111122; border:2px solid #ff007f; margin-top:15px;"></canvas>
     </div>
 
 <script>
-    // 🔑 Admin password to control everything
-    const ADMIN_PASSWORD = "tega"; 
-    // 🌐 Public Shared Cloud Database Endpoint (kvdb serverless key value storage)
-    const SYNC_URL = "https://kvdb.io/MN9t7jE2gJ5YkCgBef9h3P/tega_feed_v2";
-
-    let database = [];
-
-    // Fetch live items from cloud database immediately on load
-    async function fetchCloudDatabase() {
-        try {
-            const response = await fetch(SYNC_URL);
-            if(response.ok) {
-                database = await response.json();
-            } else {
-                // Fallback initial record if cloud storage container is fresh
-                database = [{
-                    tag: "Tactics",
-                    img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2",
-                    title: "Portugal reach Round of 16 after dramatic tactical turnaround over Croatia",
-                    home: "Portugal", score: "2 - 1", away: "Croatia",
-                    desc: "An in-depth review of the second-half spatial control adjustment. The midfield diamond structural pivot unlocked key passing vertical corridors."
-                }];
-            }
-        } catch(e) {
-            console.log("Offline mode or cloud link delay, loading local copy...");
-            database = JSON.parse(localStorage.getItem('tega_posts_backup')) || [];
-        }
-        renderFeed();
-        if(document.getElementById("adminPanelDesk").style.display === "block") {
-            renderDeleteDashboard();
-        }
-    }
-
-    async function syncToCloud() {
-        localStorage.setItem('tega_posts_backup', JSON.stringify(database));
-        try {
-            await fetch(SYNC_URL, {
-                method: 'POST',
-                body: JSON.stringify(database),
-                headers: { 'Content-Type': 'application/json' }
-            });
-        } catch(e) {
-            console.error("Cloud synchronization pending connectivity...", e);
-        }
-    }
+    const ADMIN_PASSWORD = "tega";
 
     function verifyAdminGate() {
-        const input = document.getElementById("gatePassword").value;
-        if(input === ADMIN_PASSWORD) {
+        if(document.getElementById("gatePassword").value === ADMIN_PASSWORD) {
             document.getElementById("lockGate").style.display = "none";
             document.getElementById("adminPanelDesk").style.display = "block";
-            renderDeleteDashboard();
         } else {
-            alert("Unauthorized Pin Attempt!");
+            alert("Wrong access credential!");
         }
     }
 
     function switchTab(tabId) {
-        const loader = document.getElementById("preloader");
-        loader.style.display = "flex"; loader.style.opacity = "1";
+        document.getElementById("preloader").style.display = "flex";
+        document.getElementById("preloader").style.opacity = "1";
         setTimeout(() => {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
             if(event) event.currentTarget.classList.add('active');
-            loader.style.opacity = "0";
-            setTimeout(() => { loader.style.display = "none"; }, 300);
-        }, 300);
+            document.getElementById("preloader").style.opacity = "0";
+            setTimeout(() => { document.getElementById("preloader").style.display = "none"; }, 200);
+        }, 200);
     }
 
-    function renderFeed() {
-        const newsGrid = document.getElementById("newsGrid");
-        const tacticsGrid = document.getElementById("tacticsGrid");
-        newsGrid.innerHTML = ""; tacticsGrid.innerHTML = "";
-
-        database.forEach((post, index) => {
-            const card = document.createElement("div");
-            card.className = "sub-card";
-            card.onclick = () => openReader(index);
-            card.innerHTML = `
-                <div class="image-wrapper">
-                    <span class="badge">${post.tag}</span>
-                    <img src="${post.img || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2'}" alt="Media Cover">
-                </div>
-                <div class="card-content">
-                    <h4 class="card-title">${post.title}</h4>
-                    <p class="card-desc">${post.desc.substring(0, 80)}...</p>
-                    <div class="match-strip"><span>${post.home}</span><span class="vs-score">${post.score}</span><span>${post.away}</span></div>
-                </div>
-            `;
-            newsGrid.insertBefore(card.cloneNode(true), newsGrid.firstChild);
-            newsGrid.firstChild.onclick = () => openReader(index);
-
-            if(post.tag.toLowerCase() === 'tactics') {
-                tacticsGrid.insertBefore(card.cloneNode(true), tacticsGrid.firstChild);
-                tacticsGrid.firstChild.onclick = () => openReader(index);
-            }
-        });
-    }
-
-    function renderDeleteDashboard() {
-        const listDiv = document.getElementById("deleteDashboardList");
-        listDiv.innerHTML = "";
-        database.forEach((post, index) => {
-            const row = document.createElement("div");
-            row.className = "manage-item";
-            row.innerHTML = `
-                <span>${post.title.substring(0, 30)}...</span>
-                <button class="delete-btn" onclick="deletePost(${index})">Remove</button>
-            `;
-            listDiv.appendChild(row);
-        });
-    }
-
-    async function publishCard() {
-        const tag = document.getElementById("postTag").value || "News";
-        const img = document.getElementById("postImage").value;
-        const title = document.getElementById("postTitle").value;
-        const home = document.getElementById("homeTeam").value;
-        const score = document.getElementById("scoreLine").value;
-        const away = document.getElementById("awayTeam").value;
-        const desc = document.getElementById("postDesc").value;
-
-        if(!title || !home || !away || !score || !desc) { alert("Complete details!"); return; }
-
-        database.push({ tag, img, title, home, score, away, desc });
-        
-        // Show loading state while saving to cloud database
-        const loader = document.getElementById("preloader");
-        loader.style.display = "flex"; loader.style.opacity = "1";
-        
-        await syncToCloud();
-        renderFeed();
-        renderDeleteDashboard();
-
-        document.getElementById("postTag").value = ""; document.getElementById("postImage").value = "";
-        document.getElementById("postTitle").value = ""; document.getElementById("homeTeam").value = "";
-        document.getElementById("scoreLine").value = ""; document.getElementById("awayTeam").value = "";
-        document.getElementById("postDesc").value = "";
-        
-        setTimeout(() => {
-            loader.style.opacity = "0";
-            setTimeout(() => { loader.style.display = "none"; }, 300);
-            switchTab('news');
-        }, 500);
-    }
-
-    async function deletePost(index) {
-        if(confirm("Are you sure you want to completely delete this story globally?")) {
-            database.splice(index, 1);
-            await syncToCloud();
-            renderFeed();
-            renderDeleteDashboard();
-        }
-    }
-
-    function openReader(index) {
-        const item = database[index];
-        document.getElementById("readerHero").innerHTML = `<img src="${item.img || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2'}">`;
-        document.getElementById("readerTitle").innerText = item.title;
-        document.getElementById("readerMatch").innerHTML = `<div class="match-strip"><span>${item.home}</span><span class="vs-score">${item.score}</span><span>${item.away}</span></div>`;
-        document.getElementById("readerText").innerText = item.desc;
+    function openGlobalStory(title, img, tag, home, score, away, desc) {
+        document.getElementById("readerHero").innerHTML = `<img src="${img}">`;
+        document.getElementById("readerTitle").innerText = title;
+        document.getElementById("readerMatch").innerHTML = `<div class="match-strip"><span>${home}</span><span class="vs-score">${score}</span><span>${away}</span></div>`;
+        document.getElementById("readerText").innerText = desc;
         document.getElementById("articleReader").style.display = "flex";
     }
 
-    window.addEventListener('load', () => {
-        fetchCloudDatabase();
-        setTimeout(() => {
-            const loader = document.getElementById("preloader");
-            loader.style.opacity = "0";
-            setTimeout(() => { loader.style.display = "none"; }, 300);
-        }, 800);
-    });
+    function generateCodeBlock() {
+        const tag = document.getElementById("postTag").value || "News";
+        const img = document.getElementById("postImage").value || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2";
+        const title = document.getElementById("postTitle").value.replace(/'/g, "\\'");
+        const home = document.getElementById("homeTeam").value;
+        const score = document.getElementById("scoreLine").value;
+        const away = document.getElementById("awayTeam").value;
+        const desc = document.getElementById("postDesc").value.replace(/'/g, "\\'");
 
-    // Offline game engine trigger logic
-    function checkNetworkStatus() {
-        const portal = document.getElementById("portalView");
-        const fallback = document.getElementById("offlineOverlay");
-        if (navigator.onLine) {
-            portal.style.display = "block";
-            fallback.style.display = "none";
-        } else {
-            portal.style.display = "none";
-            fallback.style.display = "flex";
-            ignition();
-        }
+        if(!title || !home || !away || !score || !desc) { alert("Please fill all details!"); return; }
+
+        const generatedCode = `<div class="sub-card" onclick="openGlobalStory('${title}', '${img}', '${tag}', '${home}', '${score}', '${away}', '${desc}')">
+    <div class="image-wrapper"><span class="badge">${tag}</span><img src="${img}"></div>
+    <div class="card-content">
+        <h4 class="card-title">${title}</h4>
+        <p class="card-desc">${desc.substring(0, 75)}...</p>
+        <div class="match-strip"><span>${home}</span><span class="vs-score">${score}</span><span>${away}</span></div>
+    </div>
+</div>`;
+
+        document.getElementById("codeResult").value = generatedCode;
+        document.getElementById("outputBox").style.display = "block";
     }
-    window.addEventListener('online', checkNetworkStatus);
-    window.addEventListener('offline', checkNetworkStatus);
 
-    let activeArena = false;
-    function ignition() {
-        if(activeArena) return;
-        activeArena = true;
-        const cvs = document.getElementById("fallbackCanvas");
-        const cxx = cvs.getContext("2d");
-        const tracker = document.getElementById("fallbackScore");
-        let pts = 0; let carX = cvs.width/2; let targetCarX = carX; let trafficFleet = [];
-
-        cvs.addEventListener("touchmove", e => {
-            const boundary = cvs.getBoundingClientRect();
-            targetCarX = (e.touches[0].clientX - boundary.left) * (cvs.width / boundary.width);
-        });
-
-        function play() {
-            if(navigator.onLine) { activeArena = false; return; }
-            requestAnimationFrame(play);
-            cxx.clearRect(0,0,cvs.width,cvs.height);
-            carX += (targetCarX - carX) * 0.2;
-            cxx.fillStyle = "#facc15";
-            cxx.fillRect(carX-12, cvs.height-60, 24, 35);
-
-            if(Math.random() < 0.03 && trafficFleet.length < 3) {
-                trafficFleet.push({x: Math.random()*(cvs.width-30)+15, y: -50});
+    // Populate tactics tab based on markup tag values automatically
+    function setupTacticsDesk() {
+        const tacticsGrid = document.getElementById("tacticsGrid");
+        tacticsGrid.innerHTML = "";
+        document.querySelectorAll("#newsGrid .sub-card").forEach(card => {
+            const badgeText = card.querySelector(".badge").innerText.toLowerCase();
+            if(badgeText === "tactics") {
+                tacticsGrid.appendChild(card.cloneNode(true));
+                tacticsGrid.lastChild.onclick = card.onclick;
             }
-            trafficFleet.forEach((enemy, idx) => {
-                enemy.y += 5;
-                cxx.fillStyle = "#ef4444";
-                cxx.fillRect(enemy.x, enemy.y, 24, 35);
-                if(enemy.y > cvs.height - 60 && enemy.y < cvs.height - 20 && Math.abs(enemy.x - carX) < 20) { pts = 0; enemy.y = -50; }
-                if(enemy.y > cvs.height) { trafficFleet.splice(idx, 1); pts += 10; tracker.innerText = pts; }
-            });
-        }
-        play();
+        });
     }
+
+    window.addEventListener('load', () => {
+        setupTacticsDesk();
+        setTimeout(() => {
+            document.getElementById("preloader").style.opacity = "0";
+            setTimeout(() => { document.getElementById("preloader").style.display = "none"; }, 300);
+        }, 600);
+    });
 </script>
 </body>
 </html>
