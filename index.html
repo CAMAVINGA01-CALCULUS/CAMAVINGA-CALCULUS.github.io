@@ -18,7 +18,6 @@
         body {
             margin: 0;
             background-color: var(--bg-base);
-            /* Crisp, clearly visible structural yellow diagonal stripes on white background */
             background-image: repeating-linear-gradient(
                 45deg,
                 rgba(250, 204, 21, 0.15),
@@ -41,7 +40,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.3s ease;
         }
 
         .ball-loader {
@@ -207,9 +206,9 @@
                 </div>
                 <div class="form-group">
                     <input type="text" id="reviewerName" placeholder="Your Name" style="margin-bottom: 10px; border: 1px solid var(--border); color: #000; background: #fff;">
-                    <textarea id="reviewText" rows="2" placeholder="Write your match comment or feedback here..." style="border: 1px solid var(--border); color: #000; background: #fff;"></textarea>
+                    <textarea id="reviewText" rows="2" placeholder="Write your comment or feedback here..." style="border: 1px solid var(--border); color: #000; background: #fff;"></textarea>
                 </div>
-                <button class="publish-btn" onclick="submitReview()" style="background:var(--accent-dark); color:white; margin-bottom:25px;">Submit Public Review</button>
+                <button class="publish-btn" onclick="submitReview()" style="background:var(--accent-dark); color:white; margin-bottom:25px;">Submit Review</button>
                 
                 <div id="reviewsContainer"></div>
             </div>
@@ -217,7 +216,7 @@
 
         <div id="tab-creator" class="tab-content">
             <div class="admin-panel">
-                <h3>Publish Story (Goes Live Worldwide Immediately)</h3>
+                <h3>Publish Story (Creator Dashboard)</h3>
                 <div class="form-group"><label>Category Tag</label><input type="text" id="postTag" placeholder="Tactics or News"></div>
                 <div class="form-group"><label>Cover Image URL</label><input type="text" id="postImage" placeholder="Image web link address"></div>
                 <div class="form-group"><label>Headline Title</label><input type="text" id="postTitle" placeholder="Headline text..."></div>
@@ -227,7 +226,7 @@
                     <div class="form-group"><label>Away Team</label><input type="text" id="awayTeam" placeholder="Chelsea"></div>
                 </div>
                 <div class="form-group"><label>Full Analysis Narrative Text</label><textarea id="postDesc" rows="4" placeholder="Deep match summary detail..."></textarea></div>
-                <button class="publish-btn" onclick="publishCard()">Publish to Live Global Cloud</button>
+                <button class="publish-btn" onclick="publishCard()">Publish Story</button>
             </div>
         </div>
     </div>
@@ -253,12 +252,23 @@
     </div>
 
 <script>
-    const CLOUD_STORIES = "https://kvdb.io/MN94Q2t7Xf87yWqA1PjCg5/tega_global_posts";
-    const CLOUD_REVIEWS = "https://kvdb.io/MN94Q2t7Xf87yWqA1PjCg5/tega_global_reviews";
-
+    let db;
     let currentRating = 5;
     let database = [];
     let reviewsList = [];
+
+    // Initialize Local Secure Browser Database (IndexedDB)
+    const request = indexedDB.open("TegaDatabase", 1);
+    request.onupgradeneeded = function(e) {
+        let dbInstance = e.target.result;
+        if (!dbInstance.objectStoreNames.contains("content")) {
+            dbInstance.createObjectStore("content", { keyPath: "id" });
+        }
+    };
+    request.onsuccess = function(e) {
+        db = e.target.result;
+        loadSavedData();
+    };
 
     function switchTab(tabId) {
         const loader = document.getElementById("preloader");
@@ -267,10 +277,10 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
-            event.currentTarget.classList.add('active');
+            if(event) event.currentTarget.classList.add('active');
             loader.style.opacity = "0";
-            setTimeout(() => { loader.style.display = "none"; }, 400);
-        }, 300);
+            setTimeout(() => { loader.style.display = "none"; }, 300);
+        }, 200);
     }
 
     function setStar(rating) {
@@ -282,26 +292,40 @@
         });
     }
 
-    async function syncCloudData() {
-        try {
-            const resStories = await fetch(CLOUD_STORIES);
-            if (resStories.ok) database = await resStories.json();
-        } catch(e) {}
+    function loadSavedData() {
+        const transaction = db.transaction(["content"], "readonly");
+        const store = transaction.objectStore("content");
+        
+        const getStories = store.get("stories");
+        getStories.onsuccess = function() {
+            database = getStories.result ? getStories.result.data : [
+                {
+                    tag: "Tactics", img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2",
+                    title: "Welcome to T.E.G.A Live Feed", home: "Live", score: "0 - 0", away: "Arena",
+                    desc: "Your setup is fully optimized. Use the Creator Engine to post custom tactical match cards!"
+                }
+            ];
+            renderFeed();
+        };
 
-        try {
-            const resReviews = await fetch(CLOUD_REVIEWS);
-            if (resReviews.ok) reviewsList = await resReviews.json();
-        } catch(e) {}
+        const getReviews = store.get("reviews");
+        getReviews.onsuccess = function() {
+            reviewsList = getReviews.result ? getReviews.result.data : [];
+            renderReviews();
+        };
 
-        if(database.length === 0) {
-            database = [{
-                tag: "Tactics", img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2",
-                title: "Welcome to T.E.G.A Live Feed", home: "Live", score: "0 - 0", away: "Arena",
-                desc: "Cloud database synced successfully. Use the Creator Engine to post global tactical breakdowns!"
-            }];
-        }
-        renderFeed();
-        renderReviews();
+        // Turn off loading screen instantly once local database loads
+        setTimeout(() => {
+            const loader = document.getElementById("preloader");
+            loader.style.opacity = "0";
+            setTimeout(() => { loader.style.display = "none"; }, 400);
+        }, 200);
+    }
+
+    function saveData(key, dataArray) {
+        const transaction = db.transaction(["content"], "readwrite");
+        const store = transaction.objectStore("content");
+        store.put({ id: key, data: dataArray });
     }
 
     function renderFeed() {
@@ -346,7 +370,7 @@
         });
     }
 
-    async function publishCard() {
+    function publishCard() {
         const tag = document.getElementById("postTag").value || "News";
         const img = document.getElementById("postImage").value;
         const title = document.getElementById("postTitle").value;
@@ -355,29 +379,29 @@
         const away = document.getElementById("awayTeam").value;
         const desc = document.getElementById("postDesc").value;
 
-        if(!title || !home || !away || !score || !desc) { alert("Fill all required options!"); return; }
+        if(!title || !home || !away || !score || !desc) { alert("Fill all required fields!"); return; }
 
         database.push({ tag, img, title, home, score, away, desc });
-        await fetch(CLOUD_STORIES, { method: "POST", body: JSON.stringify(database) });
+        saveData("stories", database);
 
         document.getElementById("postTitle").value = "";
         document.getElementById("postDesc").value = "";
         switchTab('news');
-        syncCloudData();
+        renderFeed();
     }
 
-    async function submitReview() {
+    function submitReview() {
         const name = document.getElementById("reviewerName").value;
         const text = document.getElementById("reviewText").value;
-        if(!text) { alert("Please write a comment first!"); return; }
+        if(!text) { alert("Please write a comment!"); return; }
 
         reviewsList.push({ stars: currentRating, name: name, text: text });
-        await fetch(CLOUD_REVIEWS, { method: "POST", body: JSON.stringify(reviewsList) });
+        saveData("reviews", reviewsList);
 
         document.getElementById("reviewerName").value = "";
         document.getElementById("reviewText").value = "";
         setStar(5);
-        syncCloudData();
+        renderReviews();
     }
 
     function openReader(index) {
@@ -451,11 +475,6 @@
     window.addEventListener('load', () => {
         setStar(5);
         checkNetworkStatus();
-        syncCloudData().then(() => {
-            const loader = document.getElementById("preloader");
-            loader.style.opacity = "0";
-            setTimeout(() => { loader.style.display = "none"; }, 400);
-        });
     });
 </script>
 </body>
