@@ -2,282 +2,308 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>T.E.G.A Neon Overdrive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T.E.G.A Football Central</title>
     <style>
+        :root {
+            --bg-dark: #0a0f1d;
+            --card-bg: #131b2e;
+            --neon-green: #00ff87;
+            --neon-blue: #00d2ff;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
         body {
             margin: 0;
-            background: #0d0d1a;
-            color: #fff;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--neon-green);
+            text-shadow: 0 0 15px rgba(0, 255, 135, 0.3);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .timeline {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            padding-left: 20px;
+            border-left: 3px solid #1e293b;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -31px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            background-color: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .match-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .match-meta {
             display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .match-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .team {
+            width: 40%;
+        }
+        .team.home { text-align: right; }
+        .team.away { text-align: left; }
+        
+        .score {
+            width: 20%;
+            text-align: center;
+            font-size: 1.8rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
+        }
+
+        .analysis-summary {
+            background: rgba(10, 15, 29, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--neon-blue);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .stats-container {
+            margin-top: 15px;
+        }
+
+        .stat-row {
+            margin-bottom: 12px;
+        }
+
+        .stat-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .stat-bar-bg {
+            height: 8px;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: var(--neon-green);
+        }
+
+        .mvp-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 6px 12px;
+            background: rgba(0, 255, 135, 0.1);
+            border: 1px solid var(--neon-green);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--neon-green);
+        }
+
+        /* Offline Game Container Overlay */
+        #offlineGameScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #0d0d1a;
+            z-index: 9999;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            user-select: none;
-        }
-        h1 {
-            margin: 5px 0;
-            color: #ff007f;
-            text-shadow: 0 0 12px #ff007f;
-            font-size: 26px;
-            letter-spacing: 3px;
-        }
-        #hud {
-            display: flex;
-            gap: 40px;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        #score span { color: #00ffcc; }
-        #speed span { color: #ffff00; }
-        #gameContainer {
-            position: relative;
-            width: 100%;
-            max-width: 450px;
-        }
-        canvas {
-            background: #111122;
-            border: 3px solid #ff007f;
-            border-radius: 12px;
-            box-shadow: 0 0 30px rgba(255, 0, 127, 0.25);
-            display: block;
-            width: 100%;
-            touch-action: none;
-        }
-        .instruction {
-            color: #666688;
-            font-size: 13px;
-            margin-top: 8px;
-            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <h1>T.E.G.A OVERDRIVE</h1>
-    <div id="hud">
-        <div id="score">Score: <span>0</span></div>
-        <div id="speed">Speed: <span>0</span> MPH</div>
+    <div id="mainBlogContent">
+        <header>
+            <h1>T.E.G.A FOOTBALL</h1>
+            <p>Post-Match Tactical Breakdown & Historical Timeline</p>
+        </header>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="match-card">
+                    <div class="match-meta">
+                        <span>Champions League • Quarter Final</span>
+                        <span>Just Now</span>
+                    </div>
+                    <div class="match-header">
+                        <div class="team home">Real Madrid</div>
+                        <div class="score">3 - 2</div>
+                        <div class="team away">Man City</div>
+                    </div>
+                    <div class="analysis-summary">
+                        <strong>Tactical Takeaway:</strong> An incredibly high-intensity transition battle. Madrid completely exploited space behind the opposition full-backs during inverted central overloads, snatching the match-winner in the 87th minute.
+                    </div>
+                    <div class="stats-container">
+                        <div class="stat-row">
+                            <div class="stat-labels"><span>42%</span> <span>Possession</span> <span>58%</span></div>
+                            <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: 42%"></div></div>
+                        </div>
+                    </div>
+                    <div class="mvp-badge">🔥 Match MVP: Jude Bellingham (9.1 Rating)</div>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="450" height="650"></canvas>
+
+    <div id="offlineGameScreen">
+        <h2 style="color: #ff007f; margin-bottom: 10px;">🔴 OFFLINE MODE</h2>
+        <div style="font-size: 18px; margin-bottom: 10px;">Score: <span id="scoreVal" style="color: #00ffcc;">0</span></div>
+        <canvas id="gameCanvas" width="400" height="500" style="background: #111122; border: 3px solid #ff007f; border-radius: 8px;"></canvas>
+        <p style="color: #666688; font-size: 13px; margin-top: 10px;">No network! Drag on canvas or use A/D keys to play the car fallback mini-game.</p>
     </div>
-    
-    <div class="instruction">PC: Use **A / D** or **Arrow Keys** | Mobile: **Drag/Swipe anywhere** on the screen!</div>
 
 <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const scoreVal = document.querySelector("#score span");
-    const speedVal = document.querySelector("#speed span");
-
-    let score = 0;
-    let distance = 0;
-    let gameOver = false;
-    let gameSpeed = 8;
-    const maxGameSpeed = 22;
-
-    const player = {
-        x: canvas.width / 2,
-        y: canvas.height - 120,
-        width: 36,
-        height: 65,
-        targetX: canvas.width / 2,
-        speed: 0.2, 
-        color: "#00ffcc"
-    };
-
-    let traffic = [];
-    let particles = [];
-    const roadWidth = 340;
-    const roadLeft = (canvas.width - roadWidth) / 2;
-
-    let keys = { Left: false, Right: false };
-    
-    window.addEventListener("keydown", e => {
-        if (e.key === "ArrowLeft" || e.key === "a") keys.Left = true;
-        if (e.key === "ArrowRight" || e.key === "d") keys.Right = true;
-        if (gameOver && (e.key === " " || e.key === "Enter")) resetGame();
-    });
-    
-    window.addEventListener("keyup", e => {
-        if (e.key === "ArrowLeft" || e.key === "a") keys.Left = false;
-        if (e.key === "ArrowRight" || e.key === "d") keys.Right = false;
-    });
-
-    function handleMove(e) {
-        if (gameOver) return;
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        let relativeX = (clientX - rect.left) * (canvas.width / rect.width);
-        player.targetX = Math.max(roadLeft + player.width/2, Math.min(roadLeft + roadWidth - player.width/2, relativeX));
-    }
-
-    canvas.addEventListener("mousemove", (e) => { if(e.buttons === 1) handleMove(e); });
-    canvas.addEventListener("touchmove", (e) => { e.preventDefault(); handleMove(e); }, { passive: false });
-    canvas.addEventListener("pointerdown", () => { if(gameOver) resetGame(); });
-
-    function spawnTraffic() {
-        const lanes = [roadLeft + 45, roadLeft + 130, roadLeft + 215, roadLeft + 300];
-        let randomLane = lanes[Math.floor(Math.random() * lanes.length)];
+    // System to monitor network status
+    function checkConnection() {
+        const blog = document.getElementById("mainBlogContent");
+        const gameOverlay = document.getElementById("offlineGameScreen");
         
-        if (traffic.length > 0 && traffic[traffic.length - 1].y < 180) return;
-
-        const colors = ["#ff0055", "#ffff00", "#ff7700", "#b500ff"];
-        traffic.push({
-            x: randomLane,
-            y: -100,
-            width: 36,
-            height: 65,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            speed: Math.random() * 2 + 2
-        });
+        if (navigator.onLine) {
+            blog.style.display = "block";
+            gameOverlay.style.display = "none";
+        } else {
+            blog.style.display = "none";
+            gameOverlay.style.display = "flex";
+            startMiniGame();
+        }
     }
 
-    function createExplosion(x, y) {
-        for(let i=0; i<25; i++) {
-            particles.push({
-                x: x, y: y,
-                vx: (Math.random() - 0.5) * 8,
-                vy: (Math.random() - 0.5) * 8,
-                radius: Math.random() * 4 + 2,
-                alpha: 1,
-                color: Math.random() > 0.5 ? "#00ffcc" : "#ff0055"
+    window.addEventListener('online', checkConnection);
+    window.addEventListener('offline', checkConnection);
+    window.addEventListener('load', checkConnection);
+
+    // Mini-game engine logic
+    let gameRunning = false;
+    function startMiniGame() {
+        if (gameRunning) return;
+        gameRunning = true;
+        
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreEl = document.getElementById("scoreVal");
+        
+        let score = 0;
+        let pX = canvas.width / 2;
+        let targetX = pX;
+        let obstacles = [];
+        
+        window.addEventListener("keydown", e => {
+            if (e.key === "ArrowLeft" || e.key === "a") targetX -= 30;
+            if (e.key === "ArrowRight" || e.key === "d") targetX += 30;
+        });
+
+        canvas.addEventListener("touchmove", e => {
+            const rect = canvas.getBoundingClientRect();
+            targetX = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
+        });
+
+        function tick() {
+            if (!navigator.onLine) requestAnimationFrame(tick);
+            else { gameRunning = false; return; }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw track borders
+            ctx.fillStyle = "#ff007f";
+            ctx.fillRect(0, 0, 10, canvas.height);
+            ctx.fillRect(canvas.width - 10, 0, 10, canvas.height);
+            
+            // Move player
+            pX += (targetX - pX) * 0.2;
+            pX = Math.max(25, Math.min(canvas.width - 25, pX));
+            
+            // Draw player car
+            ctx.fillStyle = "#00ffcc";
+            ctx.fillRect(pX - 15, canvas.height - 70, 30, 50);
+            
+            // Spawning traffic
+            if (Math.random() < 0.02 && obstacles.length < 3) {
+                obstacles.push({ x: Math.random() * (canvas.width - 60) + 20, y: -50 });
+            }
+            
+            obstacles.forEach((obs, index) => {
+                obs.y += 5;
+                ctx.fillStyle = "#ff0055";
+                ctx.fillRect(obs.x, obs.y, 30, 50);
+                
+                // Collision
+                if (obs.y > canvas.height - 70 && obs.y < canvas.height - 20 && Math.abs(obs.x + 15 - pX) < 25) {
+                    score = 0;
+                    obs.y = -50;
+                }
+                
+                if (obs.y > canvas.height) {
+                    obstacles.splice(index, 1);
+                    score += 10;
+                    scoreEl.innerText = score;
+                }
             });
         }
+        tick();
     }
-
-    function resetGame() {
-        traffic = [];
-        particles = [];
-        score = 0;
-        distance = 0;
-        gameSpeed = 8;
-        player.x = canvas.width / 2;
-        player.targetX = canvas.width / 2;
-        gameOver = false;
-        animate();
-    }
-
-    function drawNeonCar(x, y, width, height, glowColor) {
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = glowColor;
-        
-        ctx.fillStyle = glowColor;
-        ctx.fillRect(x - width/2, y - height/2, width, height);
-
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = "#090911";
-        ctx.fillRect(x - width/2.6, y - height/6, width * 0.76, height * 0.28);
-        
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(x - width/1.8, y - height/2.5, 4, 12);
-        ctx.fillRect(x + width/2.2, y - height/2.5, 4, 12);
-        ctx.fillRect(x - width/1.8, y + height/4, 4, 12);
-        ctx.fillRect(x + width/2.2, y + height/4, 4, 12);
-    }
-
-    function animate() {
-        if (gameOver) {
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = "rgba(13, 13, 26, 0.85)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#ff007f";
-            ctx.font = "bold 36px Arial";
-            ctx.textAlign = "center";
-            ctx.fillText("SYSTEM CRASH", canvas.width / 2, canvas.height / 2 - 20);
-            ctx.fillStyle = "#fff";
-            ctx.font = "18px Arial";
-            ctx.fillText("Tap screen or hit Space to reboot", canvas.width / 2, canvas.height / 2 + 25);
-            return;
-        }
-
-        requestAnimationFrame(animate);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = "#15152a"; 
-        ctx.fillRect(roadLeft, 0, roadWidth, canvas.height);
-
-        ctx.strokeStyle = "#ff007f";
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(roadLeft, 0); ctx.lineTo(roadLeft, canvas.height);
-        ctx.moveTo(roadLeft + roadWidth, 0); ctx.lineTo(roadLeft + roadWidth, canvas.height);
-        ctx.stroke();
-
-        distance += gameSpeed;
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
-        ctx.lineWidth = 3;
-        ctx.setLineDash([30, 40]);
-        ctx.lineDashOffset = -distance;
-
-        for (let i = 1; i <= 3; i++) {
-            ctx.beginPath();
-            ctx.moveTo(roadLeft + (roadWidth / 4) * i, 0);
-            ctx.lineTo(roadLeft + (roadWidth / 4) * i, canvas.height);
-            ctx.stroke();
-        }
-        ctx.setLineDash([]); 
-
-        if (keys.Left) player.targetX -= 8;
-        if (keys.Right) player.targetX += 8;
-
-        player.targetX = Math.max(roadLeft + player.width/2, Math.min(roadLeft + roadWidth - player.width/2, player.targetX));
-        player.x += (player.targetX - player.x) * player.speed;
-
-        drawNeonCar(player.x, player.y, player.width, player.height, player.color);
-
-        if (Math.random() < 0.02) spawnTraffic();
-
-        for (let i = traffic.length - 1; i >= 0; i--) {
-            let car = traffic[i];
-            car.y += gameSpeed - car.speed;
-            
-            drawNeonCar(car.x, car.y, car.width, car.height, car.color);
-
-            if (
-                player.x - player.width/2 < car.x + car.width/2 &&
-                player.x + player.width/2 > car.x - car.width/2 &&
-                player.y - player.height/2 < car.y + car.height/2 &&
-                player.y + player.height/2 > car.y - car.height/2
-            ) {
-                createExplosion(player.x, player.y);
-                gameOver = true;
-            }
-
-            if (car.y > canvas.height + 100) {
-                traffic.splice(i, 1);
-                score += 10;
-            }
-        }
-
-        particles.forEach((p, index) => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.alpha -= 0.02;
-            ctx.fillStyle = p.color;
-            ctx.globalAlpha = Math.max(0, p.alpha);
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fill();
-            if (p.alpha <= 0) particles.splice(index, 1);
-        });
-        ctx.globalAlpha = 1.0; 
-
-        if (score > 0 && score % 100 === 0 && gameSpeed < maxGameSpeed) {
-            gameSpeed += 0.02; 
-        }
-
-        scoreVal.innerText = score;
-        speedVal.innerText = Math.floor(gameSpeed * 6);
-    }
-
-    resetGame();
 </script>
 
 </body>
