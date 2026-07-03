@@ -47,7 +47,6 @@
             animation: spinBall 1.2s infinite linear;
         }
 
-        /* Creating simple panel lines to make it look like a football spinning */
         .ball-loader::before, .ball-loader::after {
             content: '';
             position: absolute;
@@ -73,7 +72,7 @@
             text-transform: uppercase;
         }
 
-        /* --- Premium Navigation & Header Layout --- */
+        /* --- Navigation & Header Layout --- */
         .flashy-header {
             background-color: var(--bg-surface);
             border-bottom: 1px solid var(--border);
@@ -99,7 +98,6 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 8px 16px rgba(12, 13, 14, 0.15);
-            position: relative;
         }
 
         .dynamic-logo-symbol span {
@@ -117,9 +115,7 @@
             color: var(--accent-dark);
         }
 
-        .header-brand-text span {
-            color: #22c55e; /* Vibrant clean green accent point */
-        }
+        .header-brand-text span { color: #22c55e; }
 
         .header-subtext {
             font-size: 15px;
@@ -155,87 +151,6 @@
             border-radius: 2px;
         }
 
-        .hero-layout {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-
-        .main-hero-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .main-hero-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-        }
-
-        .image-wrapper {
-            width: 100%;
-            height: 400px;
-            background: #eef1f6;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .badge {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: var(--accent-dark);
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .card-content {
-            padding: 24px;
-        }
-
-        .card-title {
-            font-size: 24px;
-            font-weight: 850;
-            line-height: 1.2;
-            margin: 0 0 12px 0;
-            letter-spacing: -0.5px;
-        }
-
-        .card-desc {
-            color: var(--text-secondary);
-            font-size: 15px;
-            line-height: 1.5;
-            margin: 0 0 20px 0;
-        }
-
-        .match-strip {
-            display: inline-flex;
-            align-items: center;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            gap: 12px;
-        }
-
-        .match-strip .vs-score {
-            color: #22c55e;
-        }
-
         .feed-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -249,15 +164,78 @@
             border: 1px solid var(--border);
             box-shadow: 0 2px 8px rgba(0,0,0,0.02);
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
         }
 
-        .sub-card .image-wrapper {
+        .image-wrapper {
+            width: 100%;
             height: 200px;
+            background: #eef1f6;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
-        .sub-card .card-title {
-            font-size: 18px;
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--accent-dark);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        .card-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 850;
+            line-height: 1.25;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .card-desc {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 0 0 15px 0;
+        }
+
+        .match-strip {
+            margin-top: auto;
+            display: inline-flex;
+            align-items: center;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            gap: 10px;
+            width: fit-content;
+        }
+
+        .match-strip .vs-score { color: #22c55e; }
 
         /* --- Creator Form Panel --- */
         .admin-panel {
@@ -268,69 +246,36 @@
             padding: 30px;
         }
 
-        .admin-panel h3 {
-            margin-top: 0;
-            font-size: 18px;
-            color: var(--accent-dark);
-        }
+        .admin-panel h3 { margin-top: 0; font-size: 18px; color: var(--accent-dark); }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        .form-row {
+            display: flex;
+            flex-direction: column;
             gap: 15px;
             margin-bottom: 20px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .form-group label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; }
         .form-group input, .form-group textarea {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 10px;
-            color: var(--text-primary);
-            font-family: inherit;
+            background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 10px; color: var(--text-primary); font-family: inherit;
         }
-
-        .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: var(--accent-dark);
-        }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-dark); }
 
         .publish-btn {
-            background: var(--accent-dark);
-            color: #ffffff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s;
+            background: var(--accent-dark); color: #ffffff; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%;
         }
 
-        .publish-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Offline Game Container Overlay */
         #offlineOverlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #0d0d1a; z-index: 10000;
-            flex-direction: column; align-items: center; justify-content: center;
-            color: white;
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #0d0d1a; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white;
         }
     </style>
 </head>
@@ -343,9 +288,7 @@
 
     <header class="flashy-header">
         <div class="mega-logo-container">
-            <div class="dynamic-logo-symbol">
-                <span>T</span>
-            </div>
+            <div class="dynamic-logo-symbol"><span>T</span></div>
             <div class="brand-text-container">
                 <h1 class="header-brand-text">T.E.G.A<span>.</span></h1>
                 <p class="header-subtext">Post-Match Tactical Breakdown & Historical Timeline Feed</p>
@@ -354,49 +297,40 @@
     </header>
 
     <div class="container" id="portalView">
-        <h2 class="section-title">Top News Breakdowns</h2>
+        <h2 class="section-title">Match Breakdowns Feed</h2>
         
-        <div class="hero-layout" id="timelineStream">
-            <div class="main-hero-card">
+        <div class="feed-grid" id="secondaryGrid">
+            
+            <div class="sub-card">
                 <div class="image-wrapper">
                     <span class="badge">Tactics</span>
-                    <div style="color: var(--text-secondary); font-weight:700;">[ GRAPHIC MEDIA PREVIEW ]</div>
+                    <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2" alt="Match Action">
                 </div>
                 <div class="card-content">
-                    <h3 class="card-title">Portugal reach Round of 16 after dramatic tactical turnaround over Croatia</h3>
+                    <h4 class="card-title">Portugal reach Round of 16 after dramatic tactical turnaround over Croatia</h4>
                     <p class="card-desc">An in-depth look at how second-half structural adjustments unlocked the midfield channels, shifting momentum completely before the final whistle blow.</p>
                     <div class="match-strip">
-                        <span>Portugal</span>
-                        <span class="vs-score">2 - 1</span>
-                        <span>Croatia</span>
+                        <span>Portugal</span> <span class="vs-score">2 - 1</span> <span>Croatia</span>
                     </div>
                 </div>
             </div>
 
-            <div class="feed-grid" id="secondaryGrid">
-                <div class="sub-card">
-                    <div class="image-wrapper">
-                        <span class="badge" style="background:#22c55e; color:#fff;">Analysis</span>
-                        <div style="color: var(--text-secondary); font-size:12px;">[ MATCH SCENE MEDIA ]</div>
-                    </div>
-                    <div class="card-content">
-                        <h4 class="card-title">Why Josko Gvardiol's defensive positioning failed down the left flank</h4>
-                        <div class="match-strip">
-                            <span>Man City</span>
-                            <span class="vs-score">2 - 3</span>
-                            <span>Real Madrid</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <div class="admin-panel">
             <h3>Publish New Post-Match Breakdown</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label style="color: #22c55e; font-weight: 700;">Paste Image Web Link (URL) Here</label>
+                    <input type="text" id="postImage" placeholder="https://example.com/football-photo.jpg">
+                </div>
+            </div>
+
             <div class="form-grid">
                 <div class="form-group">
                     <label>Article Headline Title</label>
-                    <input type="text" id="postTitle" placeholder="e.g., Tactical Masterclass at Wembley">
+                    <input type="text" id="postTitle" placeholder="Tactical Masterclass at Wembley">
                 </div>
                 <div class="form-group">
                     <label>Home Team</label>
@@ -411,9 +345,12 @@
                     <input type="text" id="scoreLine" placeholder="3 - 1">
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label>Summary Analysis Content Description</label>
-                <textarea id="postDesc" rows="3" placeholder="Break down the critical strategic match changes..."></textarea>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Summary Analysis Content Description</label>
+                    <textarea id="postDesc" rows="2" placeholder="Break down the critical strategic match shifts..."></textarea>
+                </div>
             </div>
             <button class="publish-btn" onclick="triggerTabLoadAndPublish()">Publish to Timeline Feed</button>
         </div>
@@ -427,19 +364,14 @@
     </div>
 
 <script>
-    // Handles the spinning animation show/hide routine when posting new content
     function triggerTabLoadAndPublish() {
         const loader = document.getElementById("preloader");
-        
-        // Bring loading screen up instantly
         loader.style.transform = "translateY(0)";
         loader.style.opacity = "1";
         loader.style.display = "flex";
 
         setTimeout(() => {
             addNewMatchCard();
-            
-            // Fade loading screen back down smoothly after data process
             loader.style.opacity = "0";
             setTimeout(() => { loader.style.display = "none"; }, 400);
         }, 800);
@@ -447,46 +379,48 @@
 
     function addNewMatchCard() {
         const title = document.getElementById("postTitle").value;
+        const imgUrl = document.getElementById("postImage").value || '';
         const desc = document.getElementById("postDesc").value;
         const home = document.getElementById("homeTeam").value;
         const away = document.getElementById("awayTeam").value;
         const score = document.getElementById("scoreLine").value;
 
         if(!title || !home || !away || !score) {
-            alert("Fill fields completely!");
+            alert("Fill headline, teams, and score lines!");
             return;
         }
 
         const grid = document.getElementById("secondaryGrid");
         const newCard = document.createElement("div");
         newCard.className = "sub-card";
+        
+        let imageSegment = `<div class="image-wrapper"><span class="badge">Analysis</span><div style="color:var(--text-secondary); font-size:12px;">[ Image Placeholder ]</div></div>`;
+        if(imgUrl.trim() !== "") {
+            imageSegment = `<div class="image-wrapper"><span class="badge">Analysis</span><img src="${imgUrl}" alt="Match Graphic"></div>`;
+        }
+
         newCard.innerHTML = `
-            <div class="image-wrapper">
-                <span class="badge" style="background:#22c55e; color:#fff;">New Analysis</span>
-                <div style="color: var(--text-secondary); font-size:12px;">[ MATCH SCENE MEDIA ]</div>
-            </div>
+            ${imageSegment}
             <div class="card-content">
                 <h4 class="card-title">${title}</h4>
-                <p class="card-desc" style="font-size:13px; color:var(--text-secondary);">${desc}</p>
+                <p class="card-desc">${desc}</p>
                 <div class="match-strip">
-                    <span>${home}</span>
-                    <span class="vs-score">${score}</span>
-                    <span>${away}</span>
+                    <span>${home}</span> <span class="vs-score">${score}</span> <span>${away}</span>
                 </div>
             </div>
         `;
         
         grid.insertBefore(newCard, grid.firstChild);
 
-        // Reset inputs
+        // Reset
         document.getElementById("postTitle").value = "";
+        document.getElementById("postImage").value = "";
         document.getElementById("postDesc").value = "";
         document.getElementById("homeTeam").value = "";
         document.getElementById("awayTeam").value = "";
         document.getElementById("scoreLine").value = "";
     }
 
-    // Preloader shutdown hook on first entry access
     window.addEventListener('load', () => {
         const loader = document.getElementById("preloader");
         setTimeout(() => {
@@ -495,11 +429,9 @@
         }, 1000);
     });
 
-    // Connectivity tracking engine hooks
     function checkNetworkStatus() {
         const portal = document.getElementById("portalView");
         const fallback = document.getElementById("offlineOverlay");
-        
         if (navigator.onLine) {
             portal.style.display = "block";
             fallback.style.display = "none";
@@ -509,7 +441,6 @@
             ignition();
         }
     }
-
     window.addEventListener('online', checkNetworkStatus);
     window.addEventListener('offline', checkNetworkStatus);
 
@@ -517,13 +448,10 @@
     function ignition() {
         if(activeArena) return;
         activeArena = true;
-        
         const cvs = document.getElementById("fallbackCanvas");
         const cxx = cvs.getContext("2d");
         const tracker = document.getElementById("fallbackScore");
-        
-        let pts = 0; let carX = cvs.width/2; let targetCarX = carX;
-        let trafficFleet = [];
+        let pts = 0; let carX = cvs.width/2; let targetCarX = carX; let trafficFleet = [];
 
         cvs.addEventListener("touchmove", e => {
             const boundary = cvs.getBoundingClientRect();
@@ -534,7 +462,6 @@
             if(navigator.onLine) { activeArena = false; return; }
             requestAnimationFrame(play);
             cxx.clearRect(0,0,cvs.width,cvs.height);
-            
             carX += (targetCarX - carX) * 0.2;
             cxx.fillStyle = "#00ff87";
             cxx.fillRect(carX-15, cvs.height-70, 30, 45);
@@ -542,23 +469,16 @@
             if(Math.random() < 0.03 && trafficFleet.length < 3) {
                 trafficFleet.push({x: Math.random()*(cvs.width-40)+20, y: -60});
             }
-
             trafficFleet.forEach((enemy, idx) => {
                 enemy.y += 6;
                 cxx.fillStyle = "#ff007f";
                 cxx.fillRect(enemy.x, enemy.y, 30, 45);
-                
-                if(enemy.y > cvs.height - 70 && enemy.y < cvs.height - 20 && Math.abs(enemy.x - carX) < 25) {
-                    pts = 0; enemy.y = -60;
-                }
-                if(enemy.y > cvs.height) {
-                    trafficFleet.splice(idx, 1); pts += 10; tracker.innerText = pts;
-                }
+                if(enemy.y > cvs.height - 70 && enemy.y < cvs.height - 20 && Math.abs(enemy.x - carX) < 25) { pts = 0; enemy.y = -60; }
+                if(enemy.y > cvs.height) { trafficFleet.splice(idx, 1); pts += 10; tracker.innerText = pts; }
             });
         }
         play();
     }
 </script>
-
 </body>
 </html>
