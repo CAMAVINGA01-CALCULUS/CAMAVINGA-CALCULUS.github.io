@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>T.E.G.A Turbo Racing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>T.E.G.A Neon Overdrive</title>
     <style>
         body {
             margin: 0;
-            background: #050505;
+            background: #0d0d1a;
             color: #fff;
             font-family: 'Segoe UI', Arial, sans-serif;
             display: flex;
@@ -16,286 +16,267 @@
             justify-content: center;
             height: 100vh;
             overflow: hidden;
+            user-select: none;
         }
         h1 {
             margin: 5px 0;
-            letter-spacing: 3px;
-            color: #00ffcc;
-            text-shadow: 0 0 10px #00ffcc;
-        }
-        #ui {
-            font-size: 20px;
-            margin-bottom: 10px;
-            display: flex;
-            gap: 30px;
-        }
-        .stat span {
             color: #ff007f;
+            text-shadow: 0 0 12px #ff007f;
+            font-size: 26px;
+            letter-spacing: 3px;
+        }
+        #hud {
+            display: flex;
+            gap: 40px;
+            font-size: 20px;
             font-weight: bold;
+            margin-bottom: 10px;
+        }
+        #score span { color: #00ffcc; }
+        #speed span { color: #ffff00; }
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
         }
         canvas {
-            background: #000;
-            border: 3px solid #00ffcc;
-            border-radius: 10px;
-            box-shadow: 0 0 25px rgba(0, 255, 204, 0.3);
-            max-width: 100%;
+            background: #111122;
+            border: 3px solid #ff007f;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.25);
+            display: block;
+            width: 100%;
             touch-action: none;
         }
-        #controls {
-            margin-top: 15px;
-            display: flex;
-            gap: 20px;
-        }
-        .btn {
-            padding: 15px 30px;
-            font-size: 20px;
-            background: #222;
-            color: #00ffcc;
-            border: 2px solid #00ffcc;
-            border-radius: 8px;
-            cursor: pointer;
-            user-select: none;
-        }
-        .btn:active {
-            background: #00ffcc;
-            color: #000;
+        .instruction {
+            color: #666688;
+            font-size: 13px;
+            margin-top: 8px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <h1>T.E.G.A TURBO</h1>
-    <div id="ui">
-        <div class="stat">Score: <span id="score">0</span></div>
-        <div class="stat">Speed: <span id="speed">0</span> km/h</div>
+    <h1>T.E.G.A OVERDRIVE</h1>
+    <div id="hud">
+        <div id="score">Score: <span>0</span></div>
+        <div id="speed">Speed: <span>0</span> MPH</div>
     </div>
     
-    <canvas id="roadCanvas" width="600" height="400"></canvas>
-    
-    <div id="controls">
-        <div class="btn" id="leftBtn">◀ LEFT</div>
-        <div class="btn" id="rightBtn">RIGHT ▶</div>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="450" height="650"></canvas>
     </div>
+    
+    <div class="instruction">PC: Use **A / D** or **Arrow Keys** | Mobile: **Drag/Swipe anywhere** on the screen!</div>
 
 <script>
-    const canvas = document.getElementById("roadCanvas");
+    const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    
-    // UI Elements
-    const scoreText = document.getElementById("score");
-    const speedText = document.getElementById("speed");
+    const scoreVal = document.querySelector("#score span");
+    const speedVal = document.querySelector("#speed span");
 
-    // Game variables
     let score = 0;
-    let speed = 0;
-    let maxSpeed = 60;
-    let playerX = 0; // -1 is left edge, 1 is right edge of road
-    let position = 0; // distance along the track
+    let distance = 0;
     let gameOver = false;
+    let gameSpeed = 8;
+    const maxGameSpeed = 22;
 
-    // Controls
-    let keys = { left: false, right: false };
+    const player = {
+        x: canvas.width / 2,
+        y: canvas.height - 120,
+        width: 36,
+        height: 65,
+        targetX: canvas.width / 2,
+        speed: 0.2, 
+        color: "#00ffcc"
+    };
+
+    let traffic = [];
+    let particles = [];
+    const roadWidth = 340;
+    const roadLeft = (canvas.width - roadWidth) / 2;
+
+    let keys = { Left: false, Right: false };
     
-    // Wire desktop keyboard
     window.addEventListener("keydown", e => {
-        if (e.key === "ArrowLeft" || e.key === "a") keys.left = true;
-        if (e.key === "ArrowRight" || e.key === "d") keys.right = true;
-        if (gameOver && e.key === " ") resetGame();
+        if (e.key === "ArrowLeft" || e.key === "a") keys.Left = true;
+        if (e.key === "ArrowRight" || e.key === "d") keys.Right = true;
+        if (gameOver && (e.key === " " || e.key === "Enter")) resetGame();
     });
+    
     window.addEventListener("keyup", e => {
-        if (e.key === "ArrowLeft" || e.key === "a") keys.left = false;
-        if (e.key === "ArrowRight" || e.key === "d") keys.right = false;
+        if (e.key === "ArrowLeft" || e.key === "a") keys.Left = false;
+        if (e.key === "ArrowRight" || e.key === "d") keys.Right = false;
     });
 
-    // Wire mobile buttons
-    const lBtn = document.getElementById("leftBtn");
-    const rBtn = document.getElementById("rightBtn");
-    
-    lBtn.addEventListener("pointerdown", () => keys.left = true);
-    lBtn.addEventListener("pointerup", () => keys.left = false);
-    rBtn.addEventListener("pointerdown", () => keys.right = true);
-    rBtn.addEventListener("pointerup", () => keys.right = false);
-    
-    canvas.addEventListener("pointerdown", () => { if(gameOver) resetGame(); });
-
-    // Track definition (curves & colors)
-    let segments = [];
-    const segmentLength = 200;
-    
-    function createTrack() {
-        segments = [];
-        for (let i = 0; i < 500; i++) {
-            let curve = 0;
-            if (i > 50 && i < 100) curve = 0.5;    // curve right
-            if (i > 150 && i < 220) curve = -0.7;  // sharp curve left
-            if (i > 300 && i < 380) curve = 0.3;   // gentle right
-            
-            segments.push({
-                index: i,
-                curve: curve,
-                color: Math.floor(i / 3) % 2 === 0 ? { road: '#222', grass: '#0a4d0a', rumble: '#fff' } 
-                                                   : { road: '#282828', grass: '#053d05', rumble: '#ff0055' }
-            });
-        }
+    function handleMove(e) {
+        if (gameOver) return;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        let relativeX = (clientX - rect.left) * (canvas.width / rect.width);
+        player.targetX = Math.max(roadLeft + player.width/2, Math.min(roadLeft + roadWidth - player.width/2, relativeX));
     }
 
-    // Enemy Cars
-    let cars = [];
-    function spawnCars() {
-        cars = [];
-        for (let i = 20; i < 480; i += 40) {
-            cars.push({
-                segmentIndex: i,
-                offset: (Math.random() * 1.4) - 0.7, // Position across road width
-                color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-                speed: 15 + Math.random() * 15
+    canvas.addEventListener("mousemove", (e) => { if(e.buttons === 1) handleMove(e); });
+    canvas.addEventListener("touchmove", (e) => { e.preventDefault(); handleMove(e); }, { passive: false });
+    canvas.addEventListener("pointerdown", () => { if(gameOver) resetGame(); });
+
+    function spawnTraffic() {
+        const lanes = [roadLeft + 45, roadLeft + 130, roadLeft + 215, roadLeft + 300];
+        let randomLane = lanes[Math.floor(Math.random() * lanes.length)];
+        
+        if (traffic.length > 0 && traffic[traffic.length - 1].y < 180) return;
+
+        const colors = ["#ff0055", "#ffff00", "#ff7700", "#b500ff"];
+        traffic.push({
+            x: randomLane,
+            y: -100,
+            width: 36,
+            height: 65,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speed: Math.random() * 2 + 2
+        });
+    }
+
+    function createExplosion(x, y) {
+        for(let i=0; i<25; i++) {
+            particles.push({
+                x: x, y: y,
+                vx: (Math.random() - 0.5) * 8,
+                vy: (Math.random() - 0.5) * 8,
+                radius: Math.random() * 4 + 2,
+                alpha: 1,
+                color: Math.random() > 0.5 ? "#00ffcc" : "#ff0055"
             });
         }
     }
 
     function resetGame() {
+        traffic = [];
+        particles = [];
         score = 0;
-        speed = 0;
-        playerX = 0;
-        position = 0;
+        distance = 0;
+        gameSpeed = 8;
+        player.x = canvas.width / 2;
+        player.targetX = canvas.width / 2;
         gameOver = false;
-        createTrack();
-        spawnCars();
         animate();
+    }
+
+    function drawNeonCar(x, y, width, height, glowColor) {
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = glowColor;
+        
+        ctx.fillStyle = glowColor;
+        ctx.fillRect(x - width/2, y - height/2, width, height);
+
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#090911";
+        ctx.fillRect(x - width/2.6, y - height/6, width * 0.76, height * 0.28);
+        
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(x - width/1.8, y - height/2.5, 4, 12);
+        ctx.fillRect(x + width/2.2, y - height/2.5, 4, 12);
+        ctx.fillRect(x - width/1.8, y + height/4, 4, 12);
+        ctx.fillRect(x + width/2.2, y + height/4, 4, 12);
     }
 
     function animate() {
         if (gameOver) {
-            ctx.fillStyle = "rgba(0,0,0,0.8)";
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "rgba(13, 13, 26, 0.85)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#ff0055";
-            ctx.font = "bold 40px Arial";
+            ctx.fillStyle = "#ff007f";
+            ctx.font = "bold 36px Arial";
             ctx.textAlign = "center";
-            ctx.fillText("CRASH! GAME OVER", canvas.width / 2, canvas.height / 2 - 20);
+            ctx.fillText("SYSTEM CRASH", canvas.width / 2, canvas.height / 2 - 20);
             ctx.fillStyle = "#fff";
-            ctx.font = "20px Arial";
-            ctx.fillText("Click or press space to restart", canvas.width / 2, canvas.height / 2 + 30);
+            ctx.font = "18px Arial";
+            ctx.fillText("Tap screen or hit Space to reboot", canvas.width / 2, canvas.height / 2 + 25);
             return;
         }
 
         requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Movement & physics logic
-        if (keys.left) playerX -= 0.04 * (speed / maxSpeed);
-        if (keys.right) playerX += 0.04 * (speed / maxSpeed);
+        ctx.fillStyle = "#15152a"; 
+        ctx.fillRect(roadLeft, 0, roadWidth, canvas.height);
 
-        // Acceleration
-        if (speed < maxSpeed) speed += 0.5;
-        position += speed;
+        ctx.strokeStyle = "#ff007f";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(roadLeft, 0); ctx.lineTo(roadLeft, canvas.height);
+        ctx.moveTo(roadLeft + roadWidth, 0); ctx.lineTo(roadLeft + roadWidth, canvas.height);
+        ctx.stroke();
 
-        // Keep current loop going infinitely
-        if (position >= segments.length * segmentLength) {
-            position = 0;
-            cars.forEach(c => c.segmentIndex = Math.floor(Math.random() * 400) + 20);
-        }
+        distance += gameSpeed;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([30, 40]);
+        ctx.lineDashOffset = -distance;
 
-        // Draw sky and mountains background
-        ctx.fillStyle = "#050014";
-        ctx.fillRect(0, 0, canvas.width, canvas.height / 2);
-        
-        // Render 3D Perspective Road Grid
-        let playerSegmentIndex = Math.floor(position / segmentLength);
-        let currentSegment = segments[playerSegmentIndex];
-        let baseSegment = segments[playerSegmentIndex];
-        
-        let dx = -currentSegment.curve * 0.1;
-        let x = 0;
-
-        ctx.clearRect(0, canvas.height / 2, canvas.width, canvas.height / 2);
-        
-        // Draw track segments from front to back
-        let maxView = Math.min(segments.length - 1, playerSegmentIndex + 40);
-        
-        for (let n = maxView; n > playerSegmentIndex; n--) {
-            let seg = segments[n];
-            
-            // Basic pseudo-3d scaling math
-            let p1_percent = (n * segmentLength - position) / (40 * segmentLength);
-            let p2_percent = ((n + 1) * segmentLength - position) / (40 * segmentLength);
-            
-            if (p1_percent <= 0) continue;
-
-            let scale1 = 1 / p1_percent;
-            let scale2 = 1 / p2_percent;
-
-            x += dx;
-            dx += seg.curve * 0.05;
-
-            let w1 = canvas.width * 0.5 * scale1;
-            let w2 = canvas.width * 0.5 * scale2;
-            
-            let x1 = (canvas.width / 2) + (x - playerX * w1 * 0.01) * scale1;
-            let x2 = (canvas.width / 2) + (x + dx - playerX * w2 * 0.01) * scale2;
-            
-            let y1 = (canvas.height / 2) + (canvas.height / 2) * p1_percent;
-            let y2 = (canvas.height / 2) + (canvas.height / 2) * p2_percent;
-
-            // Draw Background Grass
-            ctx.fillStyle = seg.color.grass;
-            ctx.fillRect(0, y2, canvas.width, y1 - y2);
-
-            // Draw Road Body
-            ctx.fillStyle = seg.color.road;
+        for (let i = 1; i <= 3; i++) {
             ctx.beginPath();
-            ctx.moveTo(x2 - w2, y2);
-            ctx.lineTo(x2 + w2, y2);
-            ctx.lineTo(x1 + w1, y1);
-            ctx.lineTo(x1 - w1, y1);
-            ctx.fill();
+            ctx.moveTo(roadLeft + (roadWidth / 4) * i, 0);
+            ctx.lineTo(roadLeft + (roadWidth / 4) * i, canvas.height);
+            ctx.stroke();
+        }
+        ctx.setLineDash([]); 
 
-            // Draw Rumble strips
-            ctx.fillStyle = seg.color.rumble;
-            ctx.fillRect(x1 - w1 * 1.05, y2, w1 * 0.05, y1 - y2);
-            ctx.fillRect(x1 + w1, y2, w1 * 0.05, y1 - y2);
+        if (keys.Left) player.targetX -= 8;
+        if (keys.Right) player.targetX += 8;
+
+        player.targetX = Math.max(roadLeft + player.width/2, Math.min(roadLeft + roadWidth - player.width/2, player.targetX));
+        player.x += (player.targetX - player.x) * player.speed;
+
+        drawNeonCar(player.x, player.y, player.width, player.height, player.color);
+
+        if (Math.random() < 0.02) spawnTraffic();
+
+        for (let i = traffic.length - 1; i >= 0; i--) {
+            let car = traffic[i];
+            car.y += gameSpeed - car.speed;
             
-            // Update enemy positions & draw them if visible
-            cars.forEach(car => {
-                if (car.segmentIndex === n) {
-                    let carWidth = 30 * scale1;
-                    let carHeight = 20 * scale1;
-                    let carX = x1 + (car.offset * w1);
-                    let carY = y1 - carHeight;
+            drawNeonCar(car.x, car.y, car.width, car.height, car.color);
 
-                    ctx.fillStyle = car.color;
-                    ctx.fillRect(carX - carWidth / 2, carY, carWidth, carHeight);
-                    
-                    // Collision Check
-                    if (Math.abs(playerX - car.offset) < 0.4 && n === playerSegmentIndex + 2) {
-                        gameOver = true;
-                    }
-                }
-            });
+            if (
+                player.x - player.width/2 < car.x + car.width/2 &&
+                player.x + player.width/2 > car.x - car.width/2 &&
+                player.y - player.height/2 < car.y + car.height/2 &&
+                player.y + player.height/2 > car.y - car.height/2
+            ) {
+                createExplosion(player.x, player.y);
+                gameOver = true;
+            }
+
+            if (car.y > canvas.height + 100) {
+                traffic.splice(i, 1);
+                score += 10;
+            }
         }
 
-        // Draw Player's car fixed at the bottom center
-        ctx.fillStyle = "#00ffcc"; // Neon turquoise car chassis
-        ctx.fillRect(canvas.width / 2 - 25, canvas.height - 70, 50, 35);
-        ctx.fillStyle = "#000"; // Windshield
-        ctx.fillRect(canvas.width / 2 - 20, canvas.height - 65, 40, 10);
-        ctx.fillStyle = "#ffcc00"; // Tail lights
-        ctx.fillRect(canvas.width / 2 - 22, canvas.height - 45, 8, 8);
-        ctx.fillRect(canvas.width / 2 + 14, canvas.height - 45, 8, 8);
+        particles.forEach((p, index) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.02;
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fill();
+            if (p.alpha <= 0) particles.splice(index, 1);
+        });
+        ctx.globalAlpha = 1.0; 
 
-        // Track updates
-        score++;
-        scoreText.innerText = Math.floor(score / 5);
-        speedText.innerText = Math.floor(speed * 3);
-
-        // Natural handling logic: drift slightly on curves
-        playerX -= currentSegment.curve * 0.015 * (speed / maxSpeed);
-
-        // Off-road penalty
-        if (playerX < -1 || playerX > 1) {
-            if (speed > 15) speed -= 1;
+        if (score > 0 && score % 100 === 0 && gameSpeed < maxGameSpeed) {
+            gameSpeed += 0.02; 
         }
+
+        scoreVal.innerText = score;
+        speedVal.innerText = Math.floor(gameSpeed * 6);
     }
 
-    // Bootstrap
     resetGame();
 </script>
 
