@@ -7,478 +7,386 @@
     <style>
         :root {
             --bg-base: #ffffff;
-            --bg-surface: #f8f9fa;
-            --bg-card: #ffffff;
-            --accent-green: #00ff87;
-            --accent-dark: #0c0d0e;
-            --text-primary: #0c0d0e;
-            --text-secondary: #656e7b;
-            --border: #e4e7eb;
+            --bg-surface: #f9fafb;
+            --accent-yellow: #facc15;
+            --accent-dark: #0f172a;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
         }
 
         body {
             margin: 0;
             background-color: var(--bg-base);
+            /* Crisp, clearly visible structural yellow diagonal stripes on white background */
+            background-image: repeating-linear-gradient(
+                45deg,
+                rgba(250, 204, 21, 0.15),
+                rgba(250, 204, 21, 0.15) 10px,
+                transparent 10px,
+                transparent 40px
+            );
             color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            padding-bottom: 100px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding-bottom: 60px;
         }
 
-        /* --- Dynamic Preloader / Loading Animation --- */
+        /* --- Preloader --- */
         #preloader {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #ffffff;
+            background-color: var(--bg-base);
             z-index: 99999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.4s ease, transform 0.4s ease;
+            transition: opacity 0.4s ease;
         }
 
         .ball-loader {
             width: 60px;
             height: 60px;
-            background: radial-gradient(circle at 30% 30%, #ffffff, #dcdcdc 50%, #888888 100%);
+            background: radial-gradient(circle at 30% 30%, #ffffff, #dcdcdc 50%, #444 100%);
             border-radius: 50%;
             position: relative;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.1);
-            animation: spinBall 1.2s infinite linear;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            animation: spinBall 1s infinite linear;
         }
 
-        .ball-loader::before, .ball-loader::after {
-            content: '';
-            position: absolute;
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            box-sizing: border-box;
-            border: 3px dashed #0c0d0e;
-            opacity: 0.25;
-        }
-        .ball-loader::after { transform: rotate(45deg); }
+        @keyframes spinBall { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        @keyframes spinBall {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            margin-top: 15px;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* --- Navigation & Header Layout --- */
+        /* --- Header & Tabs --- */
         .flashy-header {
-            background-color: var(--bg-surface);
-            border-bottom: 1px solid var(--border);
-            padding: 35px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background-color: var(--accent-dark);
+            color: white;
+            padding: 30px 20px 0 20px;
             text-align: center;
+            border-bottom: 5px solid var(--accent-yellow);
         }
 
-        .mega-logo-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .dynamic-logo-symbol {
-            width: 65px;
-            height: 65px;
-            background: var(--accent-dark);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 16px rgba(12, 13, 14, 0.15);
-        }
-
-        .dynamic-logo-symbol span {
-            font-size: 36px;
-            font-weight: 900;
-            color: #ffffff;
-        }
-
-        .header-brand-text {
-            font-size: 40px;
-            font-weight: 900;
-            letter-spacing: -1.5px;
-            line-height: 1;
-            margin: 0;
-            color: var(--accent-dark);
-        }
-
-        .header-brand-text span { color: #22c55e; }
-
-        .header-subtext {
-            font-size: 15px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            max-width: 500px;
-            margin: 6px 0 0 0;
-        }
-
-        /* --- Feed Dashboard --- */
-        .container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        h2.section-title {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        h2.section-title::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 20px;
-            background: var(--accent-dark);
-            border-radius: 2px;
-        }
-
-        .feed-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-        }
-
-        .sub-card {
-            background: var(--bg-card);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .image-wrapper {
-            width: 100%;
-            height: 200px;
-            background: #eef1f6;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .image-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: var(--accent-dark);
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            z-index: 2;
-        }
-
-        .card-content {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 850;
-            line-height: 1.25;
-            margin: 0 0 8px 0;
-            letter-spacing: -0.3px;
-        }
-
-        .card-desc {
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.5;
-            margin: 0 0 15px 0;
-        }
-
-        .match-strip {
-            margin-top: auto;
+        .logo-box {
             display: inline-flex;
             align-items: center;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 700;
-            gap: 10px;
-            width: fit-content;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        .match-strip .vs-score { color: #22c55e; }
-
-        /* --- Creator Form Panel --- */
-        .admin-panel {
-            margin-top: 60px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 30px;
-        }
-
-        .admin-panel h3 { margin-top: 0; font-size: 18px; color: var(--accent-dark); }
-
-        .form-row {
+        .logo-icon {
+            background: var(--accent-yellow);
+            color: var(--accent-dark);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            font-size: 28px;
+            font-weight: 900;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+        .logo-text { font-size: 32px; font-weight: 900; letter-spacing: -1px; margin: 0; }
+
+        .tab-bar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; }
-        .form-group input, .form-group textarea {
-            background: #ffffff; border: 1px solid var(--border); border-radius: 6px; padding: 10px; color: var(--text-primary); font-family: inherit;
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 14px 24px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            position: relative;
         }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-dark); }
 
-        .publish-btn {
-            background: var(--accent-dark); color: #ffffff; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%;
+        .tab-btn.active { color: var(--accent-yellow); }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: var(--accent-yellow);
         }
 
-        #offlineOverlay {
+        .container { max-width: 950px; margin: 30px auto; padding: 0 20px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .feed-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+
+        .sub-card {
+            background: white; border: 2px solid var(--border); border-radius: 16px; overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); cursor: pointer; transition: transform 0.2s;
+        }
+
+        .sub-card:hover { transform: translateY(-2px); border-color: var(--accent-yellow); }
+        .image-wrapper { width: 100%; height: 240px; background: #f1f5f9; position: relative; }
+        .image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .badge {
+            position: absolute; top: 15px; left: 15px; background: var(--accent-yellow); color: var(--accent-dark);
+            padding: 6px 12px; font-weight: 800; font-size: 11px; text-transform: uppercase; border-radius: 6px;
+        }
+
+        .card-content { padding: 20px; }
+        .card-title { font-size: 22px; font-weight: 850; margin: 0 0 10px 0; color: var(--accent-dark); }
+        .card-desc { color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
+
+        .match-strip { display: inline-flex; align-items: center; background: var(--bg-surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; font-weight: 700; gap: 12px; }
+        .match-strip .vs-score { color: #16a34a; background: #dcfce7; padding: 2px 8px; border-radius: 4px; }
+
+        /* --- Review Box Design --- */
+        .review-section { background: white; border: 2px solid var(--accent-yellow); border-radius: 20px; padding: 25px; margin-top: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .star-rating { display: flex; gap: 8px; margin: 10px 0; font-size: 26px; cursor: pointer; color: #cbd5e1; }
+        .star.selected { color: var(--accent-yellow); }
+        .review-item { padding: 12px; border-bottom: 1px solid var(--border); }
+        .review-stars { color: var(--accent-yellow); font-size: 14px; margin-bottom: 4px; }
+
+        /* --- Reader View Modal --- */
+        .reader-view {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #0d0d1a; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 10000;
+            align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
         }
+
+        .reader-card { background: white; width: 100%; max-width: 650px; max-height: 85vh; border-radius: 24px; overflow-y: auto; border: 4px solid var(--accent-yellow); }
+        .reader-hero { width: 100%; height: 260px; position: relative; }
+        .reader-hero img { width: 100%; height: 100%; object-fit: cover; }
+        .reader-body { padding: 30px; }
+        .close-btn { background: var(--accent-dark); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 20px; }
+
+        /* --- Creator Panel --- */
+        .admin-panel { background: var(--accent-dark); color: white; border-radius: 20px; padding: 30px; border: 2px solid var(--accent-yellow); }
+        .admin-panel h3 { margin: 0 0 20px 0; color: var(--accent-yellow); font-size: 20px; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .form-group label { font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 600; }
+        .form-group input, .form-group textarea { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; color: white; font-family: inherit; }
+        .publish-btn { background: var(--accent-yellow); color: var(--accent-dark); border: none; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
     <div id="preloader">
         <div class="ball-loader"></div>
-        <div class="loading-text">Loading Arena...</div>
+        <div style="margin-top:20px; font-weight:800; color:var(--accent-dark)">LOADING T.E.G.A ARENA...</div>
     </div>
 
     <header class="flashy-header">
-        <div class="mega-logo-container">
-            <div class="dynamic-logo-symbol"><span>T</span></div>
-            <div class="brand-text-container">
-                <h1 class="header-brand-text">T.E.G.A<span>.</span></h1>
-                <p class="header-subtext">Post-Match Tactical Breakdown & Historical Timeline Feed</p>
-            </div>
+        <div class="logo-box"><div class="logo-icon">T</div><h1 class="logo-text">T.E.G.A<span>.</span></h1></div>
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('news')">News Feed</button>
+            <button class="tab-btn" onclick="switchTab('tactics')">Tactics Desk</button>
+            <button class="tab-btn" onclick="switchTab('reviews')">User Reviews</button>
+            <button class="tab-btn" onclick="switchTab('creator')">Creator Engine</button>
         </div>
     </header>
 
-    <div class="container" id="portalView">
-        <h2 class="section-title">Match Breakdowns Feed</h2>
-        
-        <div class="feed-grid" id="secondaryGrid">
-            
-            <div class="sub-card">
-                <div class="image-wrapper">
-                    <span class="badge">Tactics</span>
-                    <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2" alt="Match Action">
-                </div>
-                <div class="card-content">
-                    <h4 class="card-title">Portugal reach Round of 16 after dramatic tactical turnaround over Croatia</h4>
-                    <p class="card-desc">An in-depth look at how second-half structural adjustments unlocked the midfield channels, shifting momentum completely before the final whistle blow.</p>
-                    <div class="match-strip">
-                        <span>Portugal</span> <span class="vs-score">2 - 1</span> <span>Croatia</span>
-                    </div>
-                </div>
-            </div>
+    <div class="container">
+        <div id="tab-news" class="tab-content active"><div class="feed-grid" id="newsGrid"></div></div>
 
+        <div id="tab-tactics" class="tab-content"><div class="feed-grid" id="tacticsGrid"></div></div>
+
+        <div id="tab-reviews" class="tab-content">
+            <div class="review-section">
+                <h3 style="margin-top:0; color: var(--accent-dark);">Fan Ratings & Feedback Desk</h3>
+                <div class="star-rating" id="starInput">
+                    <span class="star" onclick="setStar(1)">★</span>
+                    <span class="star" onclick="setStar(2)">★</span>
+                    <span class="star" onclick="setStar(3)">★</span>
+                    <span class="star" onclick="setStar(4)">★</span>
+                    <span class="star" onclick="setStar(5)">★</span>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="reviewerName" placeholder="Your Name" style="margin-bottom: 10px; border: 1px solid var(--border); color: #000; background: #fff;">
+                    <textarea id="reviewText" rows="2" placeholder="Write your match comment or feedback here..." style="border: 1px solid var(--border); color: #000; background: #fff;"></textarea>
+                </div>
+                <button class="publish-btn" onclick="submitReview()" style="background:var(--accent-dark); color:white; margin-bottom:25px;">Submit Public Review</button>
+                
+                <div id="reviewsContainer"></div>
+            </div>
         </div>
 
-        <div class="admin-panel">
-            <h3>Publish New Post-Match Breakdown</h3>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label style="color: #22c55e; font-weight: 700;">Paste Image Web Link (URL) Here</label>
-                    <input type="text" id="postImage" placeholder="https://example.com/football-photo.jpg">
+        <div id="tab-creator" class="tab-content">
+            <div class="admin-panel">
+                <h3>Publish Story (Goes Live Worldwide Immediately)</h3>
+                <div class="form-group"><label>Category Tag</label><input type="text" id="postTag" placeholder="Tactics or News"></div>
+                <div class="form-group"><label>Cover Image URL</label><input type="text" id="postImage" placeholder="Image web link address"></div>
+                <div class="form-group"><label>Headline Title</label><input type="text" id="postTitle" placeholder="Headline text..."></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                    <div class="form-group"><label>Home Team</label><input type="text" id="homeTeam" placeholder="Arsenal"></div>
+                    <div class="form-group"><label>Score Line</label><input type="text" id="scoreLine" placeholder="2 - 1"></div>
+                    <div class="form-group"><label>Away Team</label><input type="text" id="awayTeam" placeholder="Chelsea"></div>
                 </div>
+                <div class="form-group"><label>Full Analysis Narrative Text</label><textarea id="postDesc" rows="4" placeholder="Deep match summary detail..."></textarea></div>
+                <button class="publish-btn" onclick="publishCard()">Publish to Live Global Cloud</button>
             </div>
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Article Headline Title</label>
-                    <input type="text" id="postTitle" placeholder="Tactical Masterclass at Wembley">
-                </div>
-                <div class="form-group">
-                    <label>Home Team</label>
-                    <input type="text" id="homeTeam" placeholder="Arsenal">
-                </div>
-                <div class="form-group">
-                    <label>Away Team</label>
-                    <input type="text" id="awayTeam" placeholder="Chelsea">
-                </div>
-                <div class="form-group">
-                    <label>Final Score Line</label>
-                    <input type="text" id="scoreLine" placeholder="3 - 1">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Summary Analysis Content Description</label>
-                    <textarea id="postDesc" rows="2" placeholder="Break down the critical strategic match shifts..."></textarea>
-                </div>
-            </div>
-            <button class="publish-btn" onclick="triggerTabLoadAndPublish()">Publish to Timeline Feed</button>
         </div>
     </div>
 
-    <div id="offlineOverlay">
-        <h2 style="color: #ff007f;">🔴 FIELD OFFLINE</h2>
-        <div style="font-size: 18px; margin-bottom: 12px;">Score: <span id="fallbackScore" style="color: #00ffcc;">0</span></div>
-        <canvas id="fallbackCanvas" width="400" height="500" style="background:#111122; border:2px solid #ff007f;"></canvas>
-        <p style="color: #656e7b; font-size: 13px; margin-top:12px;">No network! Drag to guide your neon racer.</p>
+    <div class="reader-view" id="articleReader" onclick="closeReader(event)">
+        <div class="reader-card">
+            <div class="reader-hero" id="readerHero"></div>
+            <div class="reader-body">
+                <span class="badge" id="readerBadge" style="position:static;"></span>
+                <h2 id="readerTitle" style="margin: 15px 0;"></h2>
+                <div id="readerMatch" style="margin-bottom: 20px;"></div>
+                <p id="readerText" style="line-height:1.7;"></p>
+                <button class="close-btn" onclick="document.getElementById('articleReader').style.display='none'">Close</button>
+            </div>
+        </div>
     </div>
 
 <script>
-    function triggerTabLoadAndPublish() {
-        const loader = document.getElementById("preloader");
-        loader.style.transform = "translateY(0)";
-        loader.style.opacity = "1";
-        loader.style.display = "flex";
+    const CLOUD_STORIES = "https://kvdb.io/MN94Q2t7Xf87yWqA1PjCg5/tega_global_posts";
+    const CLOUD_REVIEWS = "https://kvdb.io/MN94Q2t7Xf87yWqA1PjCg5/tega_global_reviews";
 
+    let currentRating = 5;
+    let database = [];
+    let reviewsList = [];
+
+    function switchTab(tabId) {
+        const loader = document.getElementById("preloader");
+        loader.style.display = "flex"; loader.style.opacity = "1";
         setTimeout(() => {
-            addNewMatchCard();
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            event.currentTarget.classList.add('active');
             loader.style.opacity = "0";
             setTimeout(() => { loader.style.display = "none"; }, 400);
-        }, 800);
+        }, 300);
     }
 
-    function addNewMatchCard() {
-        const title = document.getElementById("postTitle").value;
-        const imgUrl = document.getElementById("postImage").value || '';
-        const desc = document.getElementById("postDesc").value;
-        const home = document.getElementById("homeTeam").value;
-        const away = document.getElementById("awayTeam").value;
-        const score = document.getElementById("scoreLine").value;
+    function setStar(rating) {
+        currentRating = rating;
+        const stars = document.querySelectorAll('#starInput .star');
+        stars.forEach((star, idx) => {
+            if (idx < rating) star.classList.add('selected');
+            else star.classList.remove('selected');
+        });
+    }
 
-        if(!title || !home || !away || !score) {
-            alert("Fill headline, teams, and score lines!");
-            return;
+    async function syncCloudData() {
+        try {
+            const resStories = await fetch(CLOUD_STORIES);
+            if (resStories.ok) database = await resStories.json();
+        } catch(e) {}
+
+        try {
+            const resReviews = await fetch(CLOUD_REVIEWS);
+            if (resReviews.ok) reviewsList = await resReviews.json();
+        } catch(e) {}
+
+        if(database.length === 0) {
+            database = [{
+                tag: "Tactics", img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2",
+                title: "Welcome to T.E.G.A Live Feed", home: "Live", score: "0 - 0", away: "Arena",
+                desc: "Cloud database synced successfully. Use the Creator Engine to post global tactical breakdowns!"
+            }];
         }
+        renderFeed();
+        renderReviews();
+    }
 
-        const grid = document.getElementById("secondaryGrid");
-        const newCard = document.createElement("div");
-        newCard.className = "sub-card";
-        
-        let imageSegment = `<div class="image-wrapper"><span class="badge">Analysis</span><div style="color:var(--text-secondary); font-size:12px;">[ Image Placeholder ]</div></div>`;
-        if(imgUrl.trim() !== "") {
-            imageSegment = `<div class="image-wrapper"><span class="badge">Analysis</span><img src="${imgUrl}" alt="Match Graphic"></div>`;
-        }
+    function renderFeed() {
+        const newsGrid = document.getElementById("newsGrid");
+        const tacticsGrid = document.getElementById("tacticsGrid");
+        newsGrid.innerHTML = ""; tacticsGrid.innerHTML = "";
 
-        newCard.innerHTML = `
-            ${imageSegment}
-            <div class="card-content">
-                <h4 class="card-title">${title}</h4>
-                <p class="card-desc">${desc}</p>
-                <div class="match-strip">
-                    <span>${home}</span> <span class="vs-score">${score}</span> <span>${away}</span>
+        database.forEach((post, index) => {
+            const card = document.createElement("div");
+            card.className = "sub-card";
+            card.onclick = () => openReader(index);
+            card.innerHTML = `
+                <div class="image-wrapper"><span class="badge">${post.tag}</span><img src="${post.img || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2'}"></div>
+                <div class="card-content">
+                    <h4 class="card-title">${post.title}</h4>
+                    <p class="card-desc">${post.desc.substring(0, 110)}...</p>
+                    <div class="match-strip"><span>${post.home}</span> <span class="vs-score">${post.score}</span> <span>${post.away}</span></div>
                 </div>
-            </div>
-        `;
-        
-        grid.insertBefore(newCard, grid.firstChild);
+            `;
+            newsGrid.insertBefore(card.cloneNode(true), newsGrid.firstChild);
+            newsGrid.firstChild.onclick = () => openReader(index);
 
-        // Reset
-        document.getElementById("postTitle").value = "";
-        document.getElementById("postImage").value = "";
-        document.getElementById("postDesc").value = "";
-        document.getElementById("homeTeam").value = "";
-        document.getElementById("awayTeam").value = "";
-        document.getElementById("scoreLine").value = "";
+            if(post.tag.toLowerCase() === 'tactics') {
+                tacticsGrid.insertBefore(card.cloneNode(true), tacticsGrid.firstChild);
+                tacticsGrid.firstChild.onclick = () => openReader(index);
+            }
+        });
     }
+
+    function renderReviews() {
+        const container = document.getElementById("reviewsContainer");
+        container.innerHTML = "";
+        reviewsList.forEach(rev => {
+            const div = document.createElement("div");
+            div.className = "review-item";
+            let starsString = "★".repeat(rev.stars) + "☆".repeat(5 - rev.stars);
+            div.innerHTML = `
+                <div class="review-stars">${starsString}</div>
+                <strong>${rev.name || "Anonymous"}</strong>: <span style="color:var(--text-primary); font-size:14px;">${rev.text}</span>
+            `;
+            container.insertBefore(div, container.firstChild);
+        });
+    }
+
+    async function publishCard() {
+        const tag = document.getElementById("postTag").value || "News";
+        const img = document.getElementById("postImage").value;
+        const title = document.getElementById("postTitle").value;
+        const home = document.getElementById("homeTeam").value;
+        const score = document.getElementById("scoreLine").value;
+        const away = document.getElementById("awayTeam").value;
+        const desc = document.getElementById("postDesc").value;
+
+        if(!title || !home || !away || !score || !desc) { alert("Fill all required options!"); return; }
+
+        database.push({ tag, img, title, home, score, away, desc });
+        await fetch(CLOUD_STORIES, { method: "POST", body: JSON.stringify(database) });
+
+        document.getElementById("postTitle").value = "";
+        document.getElementById("postDesc").value = "";
+        switchTab('news');
+        syncCloudData();
+    }
+
+    async function submitReview() {
+        const name = document.getElementById("reviewerName").value;
+        const text = document.getElementById("reviewText").value;
+        if(!text) { alert("Please write a comment first!"); return; }
+
+        reviewsList.push({ stars: currentRating, name: name, text: text });
+        await fetch(CLOUD_REVIEWS, { method: "POST", body: JSON.stringify(reviewsList) });
+
+        document.getElementById("reviewerName").value = "";
+        document.getElementById("reviewText").value = "";
+        setStar(5);
+        syncCloudData();
+    }
+
+    function openReader(index) {
+        const item = database[index];
+        document.getElementById("readerHero").innerHTML = `<img src="${item.img || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2'}">`;
+        document.getElementById("readerBadge").innerText = item.tag;
+        document.getElementById("readerTitle").innerText = item.title;
+        document.getElementById("readerMatch").innerHTML = `<div class="match-strip"><span>${item.home}</span> <span class="vs-score">${item.score}</span> <span>${item.away}</span></div>`;
+        document.getElementById("readerText").innerText = item.desc;
+        document.getElementById("articleReader").style.display = "flex";
+    }
+
+    function closeReader(e) { if(e.target.id === "articleReader") document.getElementById("articleReader").style.display = "none"; }
 
     window.addEventListener('load', () => {
-        const loader = document.getElementById("preloader");
-        setTimeout(() => {
+        setStar(5);
+        syncCloudData().then(() => {
+            const loader = document.getElementById("preloader");
             loader.style.opacity = "0";
             setTimeout(() => { loader.style.display = "none"; }, 400);
-        }, 1000);
-    });
-
-    function checkNetworkStatus() {
-        const portal = document.getElementById("portalView");
-        const fallback = document.getElementById("offlineOverlay");
-        if (navigator.onLine) {
-            portal.style.display = "block";
-            fallback.style.display = "none";
-        } else {
-            portal.style.display = "none";
-            fallback.style.display = "flex";
-            ignition();
-        }
-    }
-    window.addEventListener('online', checkNetworkStatus);
-    window.addEventListener('offline', checkNetworkStatus);
-
-    let activeArena = false;
-    function ignition() {
-        if(activeArena) return;
-        activeArena = true;
-        const cvs = document.getElementById("fallbackCanvas");
-        const cxx = cvs.getContext("2d");
-        const tracker = document.getElementById("fallbackScore");
-        let pts = 0; let carX = cvs.width/2; let targetCarX = carX; let trafficFleet = [];
-
-        cvs.addEventListener("touchmove", e => {
-            const boundary = cvs.getBoundingClientRect();
-            targetCarX = (e.touches[0].clientX - boundary.left) * (cvs.width / boundary.width);
         });
-
-        function play() {
-            if(navigator.onLine) { activeArena = false; return; }
-            requestAnimationFrame(play);
-            cxx.clearRect(0,0,cvs.width,cvs.height);
-            carX += (targetCarX - carX) * 0.2;
-            cxx.fillStyle = "#00ff87";
-            cxx.fillRect(carX-15, cvs.height-70, 30, 45);
-
-            if(Math.random() < 0.03 && trafficFleet.length < 3) {
-                trafficFleet.push({x: Math.random()*(cvs.width-40)+20, y: -60});
-            }
-            trafficFleet.forEach((enemy, idx) => {
-                enemy.y += 6;
-                cxx.fillStyle = "#ff007f";
-                cxx.fillRect(enemy.x, enemy.y, 30, 45);
-                if(enemy.y > cvs.height - 70 && enemy.y < cvs.height - 20 && Math.abs(enemy.x - carX) < 25) { pts = 0; enemy.y = -60; }
-                if(enemy.y > cvs.height) { trafficFleet.splice(idx, 1); pts += 10; tracker.innerText = pts; }
-            });
-        }
-        play();
-    }
+    });
 </script>
 </body>
 </html>
