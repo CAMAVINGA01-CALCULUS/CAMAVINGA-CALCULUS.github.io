@@ -28,12 +28,14 @@
             overflow-x: hidden;
         }
 
+        /* --- Preloader --- */
         #preloader {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: var(--bg-base);
             z-index: 99999;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             transition: opacity 0.3s ease;
@@ -48,6 +50,7 @@
 
         @keyframes spinBall { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* --- Header & Tabs --- */
         .flashy-header {
             background-color: var(--accent-dark);
             color: white;
@@ -92,6 +95,7 @@
             background: var(--accent-yellow);
         }
 
+        /* --- Container Layout --- */
         .container {
             width: 100%;
             max-width: 680px;
@@ -144,6 +148,7 @@
         }
         .match-strip .vs-score { color: #16a34a; background: #dcfce7; padding: 1px 6px; border-radius: 4px; }
 
+        /* --- Lock Screen Panel --- */
         .lock-screen {
             background: white; border: 1px solid var(--border);
             border-radius: 16px; padding: 40px 20px; text-align: center;
@@ -158,6 +163,7 @@
             padding: 12px 24px; font-weight: 700; border-radius: 8px; cursor: pointer;
         }
 
+        /* --- Creator Engine / Admin Form --- */
         .admin-panel {
             background: var(--accent-dark); color: white;
             border-radius: 16px; padding: 20px; border: 1px solid var(--accent-yellow);
@@ -173,11 +179,30 @@
             background: var(--accent-yellow); color: var(--accent-dark); border: none;
             padding: 12px; border-radius: 6px; font-weight: 800; font-size: 15px; cursor: pointer; width: 100%; margin-top: 8px;
         }
+        .publish-btn:disabled { background: #64748b; cursor: not-allowed; }
 
-        .output-box {
-            margin-top: 20px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px dashed var(--accent-yellow);
+        /* --- Delete Post Engine Style --- */
+        .manage-box {
+            margin-top: 25px; padding-top: 20px; border-top: 1px dashed #334155;
+        }
+        .manage-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 13px;
+        }
+        .delete-btn {
+            background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: 700;
         }
 
+        /* --- Review Sections --- */
+        .reviews-section {
+            margin-top: 20px; padding-top: 15px; border-top: 1px solid #334155;
+        }
+        .review-bubble {
+            background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 13px;
+        }
+        .review-user { font-weight: bold; color: var(--accent-yellow); font-size: 12px; }
+
+        /* --- Reader View Modal --- */
         .reader-view {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 10000;
@@ -195,10 +220,15 @@
             padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px;
         }
 
+        /* 🏎️ RETRO NEON RACING GAME OVERLAY */
         #offlineOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #0d0d1a; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white;
+            background: #05050a; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white;
         }
+        .game-title {
+            font-size: 28px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 10px #00ffcc, 0 0 20px #ff007f; margin: 0 0 5px 0;
+        }
+        .score-board { font-size: 20px; font-weight: 700; color: #ff007f; margin-bottom: 15px; text-shadow: 0 0 5px #ff007f; }
     </style>
 </head>
 <body>
@@ -216,23 +246,11 @@
 
     <div class="container" id="portalView">
         <div id="tab-news" class="tab-content active">
-            <div class="feed-grid" id="newsGrid">
-                
-                <div class="sub-card" onclick="openGlobalStory('Portugal reach Round of 16 after tactical turnaround', 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2', 'Tactics', 'Portugal', '2 - 1', 'Croatia', 'An in-depth review of the second-half spatial control adjustment. The midfield diamond structural pivot unlocked key passing vertical corridors.')">
-                    <div class="image-wrapper"><span class="badge">Tactics</span><img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2"></div>
-                    <div class="card-content">
-                        <h4 class="card-title">Portugal reach Round of 16 after tactical turnaround</h4>
-                        <p class="card-desc">An in-depth review of the second-half spatial control adjustment...</p>
-                        <div class="match-strip"><span>Portugal</span><span class="vs-score">2 - 1</span><span>Croatia</span></div>
-                    </div>
-                </div>
-
-                </div>
+            <div class="feed-grid" id="newsGrid"></div>
         </div>
 
         <div id="tab-tactics" class="tab-content">
-            <div class="feed-grid" id="tacticsGrid">
-                </div>
+            <div class="feed-grid" id="tacticsGrid"></div>
         </div>
 
         <div id="tab-creator" class="tab-content">
@@ -243,21 +261,27 @@
             </div>
 
             <div id="adminPanelDesk" class="admin-panel" style="display: none;">
-                <h3>Generate Global Post Asset Code</h3>
+                <h3>Publish Story Live</h3>
                 <div class="form-group"><label>Category Tag</label><input type="text" id="postTag" placeholder="Tactics or News"></div>
-                <div class="form-group"><label>Cover Image URL</label><input type="text" id="postImage" placeholder="Image link..."></div>
+                <div class="form-group"><label>Cover Image URL</label><input type="text" id="postImage" placeholder="Image URL..."></div>
                 <div class="form-group"><label>Headline Title</label><input type="text" id="postTitle" placeholder="Summary title..."></div>
                 <div class="form-row-3">
                     <div class="form-group"><label>Home</label><input type="text" id="homeTeam" placeholder="ARS"></div>
                     <div class="form-group"><label>Score</label><input type="text" id="scoreLine" placeholder="0 - 0"></div>
                     <div class="form-group"><label>Away</label><input type="text" id="awayTeam" placeholder="CHE"></div>
                 </div>
-                <div class="form-group"><label>Narrative Breakdown</label><textarea id="postDesc" rows="3" placeholder="Deep details..."></textarea></div>
-                <button class="publish-btn" onclick="generateCodeBlock()">Generate Code Line</button>
+                <div class="form-group"><label>Narrative Breakdown</label><textarea id="postDesc" rows="3" placeholder="Deep analysis text details..."></textarea></div>
+                <button class="publish-btn" id="submitBtn" onclick="publishLiveCard()">Publish Story Live</button>
 
-                <div class="output-box" id="outputBox" style="display:none;">
-                    <p style="color:var(--accent-yellow); font-size:12px; margin:0 0 8px 0;">📋 Copy this text code block and paste it inside GitHub right below line 166:</p>
-                    <textarea id="codeResult" rows="6" style="width:100%; background:#0f172a; color:#a7f3d0; border:none; font-family:monospace; font-size:11px;" readonly></textarea>
+                <div class="manage-box">
+                    <h4 style="color:var(--accent-yellow); margin:0 0 10px 0;">Manage & Delete Stories</h4>
+                    <div id="deleteDashboardList"></div>
+                </div>
+
+                <div class="reviews-section">
+                    <h4 style="color:var(--accent-yellow); margin: 0 0 10px 0;">Reader Review Portal logs</h4>
+                    <div class="review-bubble"><span class="review-user">@tactical_mind:</span> Brilliant analysis on the shape shift.</div>
+                    <div class="review-bubble"><span class="review-user">@fanatic_fan:</span> This design looks insane on mobile.</div>
                 </div>
             </div>
         </div>
@@ -276,18 +300,58 @@
     </div>
 
     <div id="offlineOverlay">
-        <h2 style="color:#ff007f;">🔴 FIELD OFFLINE</h2>
-        <div>Score: <span id="fallbackScore" style="color:#00ffcc;">0</span></div>
-        <canvas id="fallbackCanvas" width="300" height="400" style="background:#111122; border:2px solid #ff007f; margin-top:15px;"></canvas>
+        <div class="game-title">NEON DRIFT RUNNER</div>
+        <div class="score-board">SCORE: <span id="fallbackScore">0</span></div>
+        <canvas id="fallbackCanvas" width="320" height="450" style="background:#020205; border:3px solid #00ffcc; box-shadow: 0 0 15px #00ffcc, 0 0 25px #ff007f; max-width:95%; border-radius:8px;"></canvas>
+        <p style="color: #64748b; font-size: 12px; margin-top:15px; letter-spacing: 1px;">CONNECTION LOST • DRAG TO STEER CAR</p>
     </div>
 
 <script>
     const ADMIN_PASSWORD = "tega";
+    // 🌐 Real Live Global Cloud Sync URL
+    const CLOUD_URL = "https://jsonbin.org/tega_sports/feed";
+
+    let database = [];
+
+    async function loadCloudDatabase() {
+        try {
+            const res = await fetch(CLOUD_URL);
+            if(res.ok) {
+                database = await res.json();
+            } else { throw new Error(); }
+        } catch(e) {
+            // Initial seed if the server bucket is loading fresh
+            database = [{
+                tag: "Tactics",
+                img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2",
+                title: "Portugal reach Round of 16 after tactical turnaround",
+                home: "Portugal", score: "2 - 1", away: "Croatia",
+                desc: "An in-depth review of the second-half spatial control adjustment. The midfield diamond structural pivot unlocked key passing vertical corridors."
+            }];
+        }
+        renderFeedAndTactics();
+    }
+
+    async function syncToCloud() {
+        try {
+            await fetch(CLOUD_URL, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'token 7ba951ab-4421-4bda-91ef-062e73f8b8a5' 
+                },
+                body: JSON.stringify(database)
+            });
+        } catch(e) {
+            console.error("Cloud synchronization failure:", e);
+        }
+    }
 
     function verifyAdminGate() {
         if(document.getElementById("gatePassword").value === ADMIN_PASSWORD) {
             document.getElementById("lockGate").style.display = "none";
             document.getElementById("adminPanelDesk").style.display = "block";
+            renderDeleteDashboard();
         } else {
             alert("Wrong access credential!");
         }
@@ -306,58 +370,170 @@
         }, 200);
     }
 
-    function openGlobalStory(title, img, tag, home, score, away, desc) {
-        document.getElementById("readerHero").innerHTML = `<img src="${img}">`;
-        document.getElementById("readerTitle").innerText = title;
-        document.getElementById("readerMatch").innerHTML = `<div class="match-strip"><span>${home}</span><span class="vs-score">${score}</span><span>${away}</span></div>`;
-        document.getElementById("readerText").innerText = desc;
-        document.getElementById("articleReader").style.display = "flex";
-    }
-
-    function generateCodeBlock() {
-        const tag = document.getElementById("postTag").value || "News";
-        const img = document.getElementById("postImage").value || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2";
-        const title = document.getElementById("postTitle").value.replace(/'/g, "\\'");
-        const home = document.getElementById("homeTeam").value;
-        const score = document.getElementById("scoreLine").value;
-        const away = document.getElementById("awayTeam").value;
-        const desc = document.getElementById("postDesc").value.replace(/'/g, "\\'");
-
-        if(!title || !home || !away || !score || !desc) { alert("Please fill all details!"); return; }
-
-        const generatedCode = `<div class="sub-card" onclick="openGlobalStory('${title}', '${img}', '${tag}', '${home}', '${score}', '${away}', '${desc}')">
-    <div class="image-wrapper"><span class="badge">${tag}</span><img src="${img}"></div>
-    <div class="card-content">
-        <h4 class="card-title">${title}</h4>
-        <p class="card-desc">${desc.substring(0, 75)}...</p>
-        <div class="match-strip"><span>${home}</span><span class="vs-score">${score}</span><span>${away}</span></div>
-    </div>
-</div>`;
-
-        document.getElementById("codeResult").value = generatedCode;
-        document.getElementById("outputBox").style.display = "block";
-    }
-
-    // Populate tactics tab based on markup tag values automatically
-    function setupTacticsDesk() {
+    function renderFeedAndTactics() {
+        const newsGrid = document.getElementById("newsGrid");
         const tacticsGrid = document.getElementById("tacticsGrid");
-        tacticsGrid.innerHTML = "";
-        document.querySelectorAll("#newsGrid .sub-card").forEach(card => {
-            const badgeText = card.querySelector(".badge").innerText.toLowerCase();
-            if(badgeText === "tactics") {
-                tacticsGrid.appendChild(card.cloneNode(true));
-                tacticsGrid.lastChild.onclick = card.onclick;
+        newsGrid.innerHTML = ""; tacticsGrid.innerHTML = "";
+
+        // Render dynamically from newest to oldest
+        for (let i = database.length - 1; i >= 0; i--) {
+            const post = database[i];
+            const card = document.createElement("div");
+            card.className = "sub-card";
+            card.onclick = () => openReader(i);
+            card.innerHTML = `
+                <div class="image-wrapper"><span class="badge">${post.tag}</span><img src="${post.img}"></div>
+                <div class="card-content">
+                    <h4 class="card-title">${post.title}</h4>
+                    <p class="card-desc">${post.desc.substring(0, 75)}...</p>
+                    <div class="match-strip"><span>${post.home}</span><span class="vs-score">${post.score}</span><span>${post.away}</span></div>
+                </div>
+            `;
+            newsGrid.appendChild(card);
+
+            if(post.tag.toLowerCase() === "tactics") {
+                const tacticsCard = card.cloneNode(true);
+                tacticsCard.onclick = () => openReader(i);
+                tacticsGrid.appendChild(tacticsCard);
             }
+        }
+    }
+
+    function renderDeleteDashboard() {
+        const listDiv = document.getElementById("deleteDashboardList");
+        listDiv.innerHTML = "";
+        database.forEach((post, index) => {
+            const row = document.createElement("div");
+            row.className = "manage-item";
+            row.innerHTML = `
+                <span>${post.title.substring(0, 30)}...</span>
+                <button class="delete-btn" onclick="deletePost(${index})">Remove</button>
+            `;
+            listDiv.appendChild(row);
         });
     }
 
+    async function publishLiveCard() {
+        const tag = document.getElementById("postTag").value || "News";
+        const img = document.getElementById("postImage").value || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2";
+        const title = document.getElementById("postTitle").value;
+        const home = document.getElementById("homeTeam").value;
+        const score = document.getElementById("scoreLine").value;
+        const away = document.getElementById("awayTeam").value;
+        const desc = document.getElementById("postDesc").value;
+
+        if(!title || !home || !away || !score || !desc) { alert("Please fill all details!"); return; }
+
+        const btn = document.getElementById("submitBtn");
+        btn.disabled = true; btn.innerText = "Syncing Live Changes...";
+
+        database.push({ tag, img, title, home, score, away, desc });
+        
+        await syncToCloud();
+        renderFeedAndTactics();
+        renderDeleteDashboard();
+
+        document.getElementById("postTag").value = ""; document.getElementById("postImage").value = "";
+        document.getElementById("postTitle").value = ""; document.getElementById("homeTeam").value = "";
+        document.getElementById("scoreLine").value = ""; document.getElementById("awayTeam").value = "";
+        document.getElementById("postDesc").value = "";
+
+        btn.disabled = false; btn.innerText = "Publish Story Live";
+        switchTab('news');
+    }
+
+    async function deletePost(index) {
+        if(confirm("Delete this story globally for everyone?")) {
+            database.splice(index, 1);
+            await syncToCloud();
+            renderFeedAndTactics();
+            renderDeleteDashboard();
+        }
+    }
+
+    function openReader(index) {
+        const item = database[index];
+        document.getElementById("readerHero").innerHTML = `<img src="${item.img}">`;
+        document.getElementById("readerTitle").innerText = item.title;
+        document.getElementById("readerMatch").innerHTML = `<div class="match-strip"><span>${item.home}</span><span class="vs-score">${item.score}</span><span>${item.away}</span></div>`;
+        document.getElementById("readerText").innerText = item.desc;
+        document.getElementById("articleReader").style.display = "flex";
+    }
+
     window.addEventListener('load', () => {
-        setupTacticsDesk();
+        loadCloudDatabase();
         setTimeout(() => {
             document.getElementById("preloader").style.opacity = "0";
             setTimeout(() => { document.getElementById("preloader").style.display = "none"; }, 300);
         }, 600);
     });
+
+    // NETWORK DETECTION ENGINE FOR RETRO DRIFT RUNNER GAME
+    function checkNetworkStatus() {
+        const portal = document.getElementById("portalView");
+        const fallback = document.getElementById("offlineOverlay");
+        if (navigator.onLine) { portal.style.display = "block"; fallback.style.display = "none"; } 
+        else { portal.style.display = "none"; fallback.style.display = "flex"; ignition(); }
+    }
+    window.addEventListener('online', checkNetworkStatus);
+    window.addEventListener('offline', checkNetworkStatus);
+
+    let activeArena = false;
+    function ignition() {
+        if(activeArena) return; activeArena = true;
+        const cvs = document.getElementById("fallbackCanvas"); const cxx = cvs.getContext("2d");
+        const tracker = document.getElementById("fallbackScore");
+        let pts = 0; let carX = cvs.width/2; let targetCarX = carX; let trafficFleet = []; let particles = [];
+
+        cvs.addEventListener("touchmove", e => {
+            const boundary = cvs.getBoundingClientRect();
+            targetCarX = (e.touches[0].clientX - boundary.left) * (cvs.width / boundary.width);
+        });
+
+        function makeExplosion(x, y) {
+            for(let i=0; i<10; i++) particles.push({x, y, vx: (Math.random()-0.5)*6, vy: (Math.random()-0.5)*6, life: 20});
+        }
+
+        function play() {
+            if(navigator.onLine) { activeArena = false; return; }
+            requestAnimationFrame(play);
+            cxx.fillStyle = "rgba(2, 2, 5, 0.3)"; cxx.fillRect(0,0,cvs.width,cvs.height);
+            
+            cxx.strokeStyle = "#111129"; cxx.lineWidth = 2;
+            for(let i=0; i<cvs.width; i+=40) { cxx.beginPath(); cxx.moveTo(i, 0); cxx.lineTo(i, cvs.height); cxx.stroke(); }
+
+            carX += (targetCarX - carX) * 0.25;
+            
+            cxx.shadowBlur = 15; cxx.shadowColor = "#00ffcc";
+            cxx.fillStyle = "#00ffcc"; cxx.fillRect(carX-12, cvs.height-70, 24, 40);
+            cxx.fillStyle = "#ffffff"; cxx.fillRect(carX-8, cvs.height-60, 16, 12);
+            cxx.shadowBlur = 0; 
+
+            if(Math.random() < 0.04 && trafficFleet.length < 4) {
+                trafficFleet.push({x: Math.random()*(cvs.width-30)+15, y: -50, speed: 4 + Math.random()*3});
+            }
+
+            trafficFleet.forEach((enemy, idx) => {
+                enemy.y += enemy.speed;
+                cxx.shadowBlur = 15; cxx.shadowColor = "#ff007f";
+                cxx.fillStyle = "#ff007f"; cxx.fillRect(enemy.x-12, enemy.y, 24, 40);
+                cxx.shadowBlur = 0;
+
+                if(enemy.y > cvs.height-70 && enemy.y < cvs.height-30 && Math.abs((enemy.x-12) - (carX-12)) < 22) {
+                    makeExplosion(carX, cvs.height-50); pts = 0; tracker.innerText = pts; enemy.y = -100;
+                }
+                if(enemy.y > cvs.height) { trafficFleet.splice(idx, 1); pts += 10; tracker.innerText = pts; }
+            });
+
+            particles.forEach((p, idx) => {
+                p.x += p.vx; p.y += p.vy; p.life--;
+                cxx.fillStyle = `rgba(255, 255, 255, ${p.life/20})`;
+                cxx.fillRect(p.x, p.y, 4, 4);
+                if(p.life <= 0) particles.splice(idx, 1);
+            });
+        }
+        play();
+    }
 </script>
 </body>
 </html>
