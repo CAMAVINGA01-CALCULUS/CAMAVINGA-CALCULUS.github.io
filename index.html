@@ -20,8 +20,8 @@
         body {
             margin: 0;
             background-color: var(--bg-base);
-            background-image: linear-gradient(135deg, rgba(250, 204, 21, 0.05) 25%, transparent 25%, transparent 50%, rgba(250, 204, 21, 0.05) 50%, rgba(250, 204, 21, 0.05) 75%, transparent 75%, transparent);
-            background-size: 24px 24px;
+            background-image: linear-gradient(135deg, rgba(250, 204, 21, 0.06) 25%, transparent 25%, transparent 50%, rgba(250, 204, 21, 0.06) 50%, rgba(250, 204, 21, 0.06) 75%, transparent 75%, transparent);
+            background-size: 28px 28px;
             color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             padding-bottom: 40px;
@@ -300,8 +300,51 @@
     </div>
 
 <script>
-    // Set your admin access password right here sha!
+    // 🔑 Admin password to control everything
     const ADMIN_PASSWORD = "tega"; 
+    // 🌐 Public Shared Cloud Database Endpoint (kvdb serverless key value storage)
+    const SYNC_URL = "https://kvdb.io/MN9t7jE2gJ5YkCgBef9h3P/tega_feed_v2";
+
+    let database = [];
+
+    // Fetch live items from cloud database immediately on load
+    async function fetchCloudDatabase() {
+        try {
+            const response = await fetch(SYNC_URL);
+            if(response.ok) {
+                database = await response.json();
+            } else {
+                // Fallback initial record if cloud storage container is fresh
+                database = [{
+                    tag: "Tactics",
+                    img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2",
+                    title: "Portugal reach Round of 16 after dramatic tactical turnaround over Croatia",
+                    home: "Portugal", score: "2 - 1", away: "Croatia",
+                    desc: "An in-depth review of the second-half spatial control adjustment. The midfield diamond structural pivot unlocked key passing vertical corridors."
+                }];
+            }
+        } catch(e) {
+            console.log("Offline mode or cloud link delay, loading local copy...");
+            database = JSON.parse(localStorage.getItem('tega_posts_backup')) || [];
+        }
+        renderFeed();
+        if(document.getElementById("adminPanelDesk").style.display === "block") {
+            renderDeleteDashboard();
+        }
+    }
+
+    async function syncToCloud() {
+        localStorage.setItem('tega_posts_backup', JSON.stringify(database));
+        try {
+            await fetch(SYNC_URL, {
+                method: 'POST',
+                body: JSON.stringify(database),
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } catch(e) {
+            console.error("Cloud synchronization pending connectivity...", e);
+        }
+    }
 
     function verifyAdminGate() {
         const input = document.getElementById("gatePassword").value;
@@ -326,16 +369,6 @@
             setTimeout(() => { loader.style.display = "none"; }, 300);
         }, 300);
     }
-
-    let database = JSON.parse(localStorage.getItem('tega_posts')) || [
-        {
-            tag: "Tactics",
-            img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2",
-            title: "Portugal reach Round of 16 after dramatic tactical turnaround over Croatia",
-            home: "Portugal", score: "2 - 1", away: "Croatia",
-            desc: "An in-depth review of the second-half spatial control adjustment. The midfield diamond structural pivot unlocked key passing vertical corridors."
-        }
-    ];
 
     function renderFeed() {
         const newsGrid = document.getElementById("newsGrid");
@@ -374,14 +407,14 @@
             const row = document.createElement("div");
             row.className = "manage-item";
             row.innerHTML = `
-                <span>${post.title.substring(0, 35)}...</span>
+                <span>${post.title.substring(0, 30)}...</span>
                 <button class="delete-btn" onclick="deletePost(${index})">Remove</button>
             `;
             listDiv.appendChild(row);
         });
     }
 
-    function publishCard() {
+    async function publishCard() {
         const tag = document.getElementById("postTag").value || "News";
         const img = document.getElementById("postImage").value;
         const title = document.getElementById("postTitle").value;
@@ -393,8 +426,12 @@
         if(!title || !home || !away || !score || !desc) { alert("Complete details!"); return; }
 
         database.push({ tag, img, title, home, score, away, desc });
-        localStorage.setItem('tega_posts', JSON.stringify(database));
         
+        // Show loading state while saving to cloud database
+        const loader = document.getElementById("preloader");
+        loader.style.display = "flex"; loader.style.opacity = "1";
+        
+        await syncToCloud();
         renderFeed();
         renderDeleteDashboard();
 
@@ -402,13 +439,18 @@
         document.getElementById("postTitle").value = ""; document.getElementById("homeTeam").value = "";
         document.getElementById("scoreLine").value = ""; document.getElementById("awayTeam").value = "";
         document.getElementById("postDesc").value = "";
-        switchTab('news');
+        
+        setTimeout(() => {
+            loader.style.opacity = "0";
+            setTimeout(() => { loader.style.display = "none"; }, 300);
+            switchTab('news');
+        }, 500);
     }
 
-    function deletePost(index) {
-        if(confirm("Are you sure you want to completely delete this story?")) {
+    async function deletePost(index) {
+        if(confirm("Are you sure you want to completely delete this story globally?")) {
             database.splice(index, 1);
-            localStorage.setItem('tega_posts', JSON.stringify(database));
+            await syncToCloud();
             renderFeed();
             renderDeleteDashboard();
         }
@@ -424,7 +466,7 @@
     }
 
     window.addEventListener('load', () => {
-        renderFeed();
+        fetchCloudDatabase();
         setTimeout(() => {
             const loader = document.getElementById("preloader");
             loader.style.opacity = "0";
