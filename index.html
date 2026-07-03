@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>T.E.G.A</title>
     <style>
         :root {
             --bg-base: #ffffff;
-            --bg-surface: #f9fafb;
+            --bg-surface: #f8fafc;
             --accent-yellow: #facc15;
             --accent-dark: #0f172a;
             --text-primary: #1e293b;
@@ -15,22 +15,20 @@
             --border: #e2e8f0;
         }
 
+        * { box-sizing: border-box; }
+
         body {
             margin: 0;
             background-color: var(--bg-base);
-            background-image: repeating-linear-gradient(
-                45deg,
-                rgba(250, 204, 21, 0.15),
-                rgba(250, 204, 21, 0.15) 10px,
-                transparent 10px,
-                transparent 40px
-            );
+            background-image: linear-gradient(135deg, rgba(250, 204, 21, 0.05) 25%, transparent 25%, transparent 50%, rgba(250, 204, 21, 0.05) 50%, rgba(250, 204, 21, 0.05) 75%, transparent 75%, transparent);
+            background-size: 24px 24px;
             color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding-bottom: 60px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding-bottom: 40px;
+            overflow-x: hidden;
         }
 
-        /* --- Preloader --- */
+        /* --- Loading Screen --- */
         #preloader {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -44,131 +42,165 @@
         }
 
         .ball-loader {
-            width: 60px;
-            height: 60px;
+            width: 50px; height: 50px;
             background: radial-gradient(circle at 30% 30%, #ffffff, #dcdcdc 50%, #444 100%);
             border-radius: 50%;
             position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             animation: spinBall 1s infinite linear;
         }
 
         @keyframes spinBall { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- Header & Tabs --- */
+        /* --- Top Header & Navigation --- */
         .flashy-header {
             background-color: var(--accent-dark);
             color: white;
-            padding: 30px 20px 0 20px;
+            padding: 20px 16px 0 16px;
             text-align: center;
-            border-bottom: 5px solid var(--accent-yellow);
+            border-bottom: 4px solid var(--accent-yellow);
         }
 
         .logo-box {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .logo-icon {
-            background: var(--accent-yellow);
-            color: var(--accent-dark);
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            font-size: 28px;
-            font-weight: 900;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .logo-text { font-size: 32px; font-weight: 900; letter-spacing: -1px; margin: 0; }
+        .logo-icon {
+            background: var(--accent-yellow); color: var(--accent-dark);
+            width: 40px; height: 40px; border-radius: 10px;
+            font-size: 24px; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .logo-text { font-size: 26px; font-weight: 900; margin: 0; letter-spacing: -1px; }
+        .logo-text span { color: var(--accent-yellow); }
 
         .tab-bar {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            max-width: 800px;
-            margin: 0 auto;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
         }
+        .tab-bar::-webkit-scrollbar { display: none; }
 
         .tab-btn {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            padding: 14px 24px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            position: relative;
+            background: transparent; border: none;
+            color: #94a3b8; padding: 12px 16px;
+            font-weight: 700; font-size: 14px;
+            cursor: pointer; position: relative;
         }
 
         .tab-btn.active { color: var(--accent-yellow); }
         .tab-btn.active::after {
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: var(--accent-yellow);
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px;
+            background: var(--accent-yellow);
         }
 
-        .container { max-width: 950px; margin: 30px auto; padding: 0 20px; }
+        /* --- Main Layout Container --- */
+        .container {
+            width: 100%;
+            max-width: 680px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .feed-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-
-        .sub-card {
-            background: white; border: 2px solid var(--border); border-radius: 16px; overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02); cursor: pointer; transition: transform 0.2s;
+        .feed-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .sub-card:hover { transform: translateY(-2px); border-color: var(--accent-yellow); }
-        .image-wrapper { width: 100%; height: 240px; background: #f1f5f9; position: relative; }
+        .sub-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            cursor: pointer;
+        }
+
+        .image-wrapper {
+            width: 100%;
+            height: 180px;
+            background: #f1f5f9;
+            position: relative;
+        }
         .image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
         .badge {
-            position: absolute; top: 15px; left: 15px; background: var(--accent-yellow); color: var(--accent-dark);
-            padding: 6px 12px; font-weight: 800; font-size: 11px; text-transform: uppercase; border-radius: 6px;
+            position: absolute; top: 12px; left: 12px;
+            background: var(--accent-yellow); color: var(--accent-dark);
+            padding: 4px 8px; font-weight: 800; font-size: 10px;
+            text-transform: uppercase; border-radius: 4px;
         }
 
-        .card-content { padding: 20px; }
-        .card-title { font-size: 22px; font-weight: 850; margin: 0 0 10px 0; color: var(--accent-dark); }
-        .card-desc { color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
+        .card-content { padding: 16px; }
+        .card-title { font-size: 18px; font-weight: 800; margin: 0 0 8px 0; line-height: 1.3; color: var(--accent-dark); }
+        .card-desc { color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin: 0 0 12px 0; }
 
-        .match-strip { display: inline-flex; align-items: center; background: var(--bg-surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; font-weight: 700; gap: 12px; }
-        .match-strip .vs-score { color: #16a34a; background: #dcfce7; padding: 2px 8px; border-radius: 4px; }
+        .match-strip {
+            display: inline-flex; align-items: center;
+            background: var(--bg-surface); border: 1px solid var(--border);
+            padding: 6px 12px; border-radius: 6px;
+            font-size: 12px; font-weight: 700; gap: 8px;
+        }
+        .match-strip .vs-score { color: #16a34a; background: #dcfce7; padding: 1px 6px; border-radius: 4px; }
 
-        /* --- Review Box Design --- */
-        .review-section { background: white; border: 2px solid var(--accent-yellow); border-radius: 20px; padding: 25px; margin-top: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .star-rating { display: flex; gap: 8px; margin: 10px 0; font-size: 26px; cursor: pointer; color: #cbd5e1; }
-        .star.selected { color: var(--accent-yellow); }
-        .review-item { padding: 12px; border-bottom: 1px solid var(--border); }
-        .review-stars { color: var(--accent-yellow); font-size: 14px; margin-bottom: 4px; }
+        /* --- Secure Locked Gate --- */
+        .lock-screen {
+            background: white; border: 1px solid var(--border);
+            border-radius: 16px; padding: 40px 20px; text-align: center;
+        }
+        .lock-screen input {
+            width: 100%; max-width: 260px; padding: 12px;
+            border: 1px solid var(--border); border-radius: 8px;
+            text-align: center; font-size: 16px; margin-bottom: 12px;
+        }
+        .lock-btn {
+            background: var(--accent-dark); color: white; border: none;
+            padding: 12px 24px; font-weight: 700; border-radius: 8px; cursor: pointer;
+        }
 
-        /* --- Reader View Modal --- */
+        /* --- Responsive Form Panel --- */
+        .admin-panel {
+            background: var(--accent-dark); color: white;
+            border-radius: 16px; padding: 20px; border: 1px solid var(--accent-yellow);
+        }
+        .admin-panel h3 { margin: 0 0 16px 0; color: var(--accent-yellow); font-size: 18px; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 12px; }
+        .form-group label { font-size: 12px; color: #94a3b8; margin-bottom: 4px; font-weight: 600; }
+        .form-group input, .form-group textarea {
+            background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 10px; color: white; font-family: inherit; font-size: 14px;
+        }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .publish-btn {
+            background: var(--accent-yellow); color: var(--accent-dark); border: none;
+            padding: 12px; border-radius: 6px; font-weight: 800; font-size: 15px; cursor: pointer; width: 100%; margin-top: 8px;
+        }
+
+        /* --- Article Overlay Reader --- */
         .reader-view {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 10000;
-            align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 10000;
+            padding: 16px; align-items: center; justify-content: center;
         }
-
-        .reader-card { background: white; width: 100%; max-width: 650px; max-height: 85vh; border-radius: 24px; overflow-y: auto; border: 4px solid var(--accent-yellow); }
-        .reader-hero { width: 100%; height: 260px; position: relative; }
+        .reader-card {
+            background: white; width: 100%; max-width: 500px; max-height: 80vh;
+            border-radius: 20px; overflow-y: auto; border: 3px solid var(--accent-yellow);
+        }
+        .reader-hero { width: 100%; height: 180px; background: #e2e8f0; }
         .reader-hero img { width: 100%; height: 100%; object-fit: cover; }
-        .reader-body { padding: 30px; }
-        .close-btn { background: var(--accent-dark); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 20px; }
-
-        /* --- Creator Panel --- */
-        .admin-panel { background: var(--accent-dark); color: white; border-radius: 20px; padding: 30px; border: 2px solid var(--accent-yellow); }
-        .admin-panel h3 { margin: 0 0 20px 0; color: var(--accent-yellow); font-size: 20px; }
-        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-        .form-group label { font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 600; }
-        .form-group input, .form-group textarea { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; color: white; font-family: inherit; }
-        .publish-btn { background: var(--accent-yellow); color: var(--accent-dark); border: none; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; width: 100%; }
-
-        /* --- Fallback Offline Canvas Screen --- */
-        #offlineOverlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #0f172a; z-index: 100000; flex-direction: column; align-items: center; justify-content: center; color: white;
+        .reader-body { padding: 20px; }
+        .close-btn {
+            background: var(--accent-dark); color: white; border: none;
+            padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px;
         }
     </style>
 </head>
@@ -176,99 +208,79 @@
 
     <div id="preloader">
         <div class="ball-loader"></div>
-        <div style="margin-top:20px; font-weight:800; color:var(--accent-dark)">LOADING T.E.G.A ARENA...</div>
     </div>
 
     <header class="flashy-header">
-        <div class="logo-box"><div class="logo-icon">T</div><h1 class="logo-text">T.E.G.A<span>.</span></h1></div>
+        <div class="logo-box">
+            <div class="logo-icon">T</div>
+            <h1 class="logo-text">T.E.G.A<span>.</span></h1>
+        </div>
         <div class="tab-bar">
             <button class="tab-btn active" onclick="switchTab('news')">News Feed</button>
             <button class="tab-btn" onclick="switchTab('tactics')">Tactics Desk</button>
-            <button class="tab-btn" onclick="switchTab('reviews')">User Reviews</button>
             <button class="tab-btn" onclick="switchTab('creator')">Creator Engine</button>
         </div>
     </header>
 
-    <div class="container" id="portalView">
-        <div id="tab-news" class="tab-content active"><div class="feed-grid" id="newsGrid"></div></div>
+    <div class="container">
+        <div id="tab-news" class="tab-content active">
+            <div class="feed-grid" id="newsGrid"></div>
+        </div>
 
-        <div id="tab-tactics" class="tab-content"><div class="feed-grid" id="tacticsGrid"></div></div>
-
-        <div id="tab-reviews" class="tab-content">
-            <div class="review-section">
-                <h3 style="margin-top:0; color: var(--accent-dark);">Fan Ratings & Feedback Desk</h3>
-                <div class="star-rating" id="starInput">
-                    <span class="star" onclick="setStar(1)">★</span>
-                    <span class="star" onclick="setStar(2)">★</span>
-                    <span class="star" onclick="setStar(3)">★</span>
-                    <span class="star" onclick="setStar(4)">★</span>
-                    <span class="star" onclick="setStar(5)">★</span>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="reviewerName" placeholder="Your Name" style="margin-bottom: 10px; border: 1px solid var(--border); color: #000; background: #fff;">
-                    <textarea id="reviewText" rows="2" placeholder="Write your comment or feedback here..." style="border: 1px solid var(--border); color: #000; background: #fff;"></textarea>
-                </div>
-                <button class="publish-btn" onclick="submitReview()" style="background:var(--accent-dark); color:white; margin-bottom:25px;">Submit Review</button>
-                
-                <div id="reviewsContainer"></div>
-            </div>
+        <div id="tab-tactics" class="tab-content">
+            <div class="feed-grid" id="tacticsGrid"></div>
         </div>
 
         <div id="tab-creator" class="tab-content">
-            <div class="admin-panel">
-                <h3>Publish Story (Creator Dashboard)</h3>
+            <div id="lockGate" class="lock-screen">
+                <h3 style="margin-top:0; color:var(--accent-dark);">🔒 Admin Gate Protection</h3>
+                <p style="color:var(--text-secondary); font-size:13px; margin-bottom:20px;">Enter verification code to unlock publication rights.</p>
+                <input type="password" id="gatePassword" placeholder="Enter Admin Pin...">
+                <br>
+                <button class="lock-btn" onclick="verifyAdminGate()">Unlock Panel</button>
+            </div>
+
+            <div id="adminPanelDesk" class="admin-panel" style="display: none;">
+                <h3>Publish New Card</h3>
                 <div class="form-group"><label>Category Tag</label><input type="text" id="postTag" placeholder="Tactics or News"></div>
-                <div class="form-group"><label>Cover Image URL</label><input type="text" id="postImage" placeholder="Image web link address"></div>
-                <div class="form-group"><label>Headline Title</label><input type="text" id="postTitle" placeholder="Headline text..."></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                    <div class="form-group"><label>Home Team</label><input type="text" id="homeTeam" placeholder="Arsenal"></div>
-                    <div class="form-group"><label>Score Line</label><input type="text" id="scoreLine" placeholder="2 - 1"></div>
-                    <div class="form-group"><label>Away Team</label><input type="text" id="awayTeam" placeholder="Chelsea"></div>
+                <div class="form-group"><label>Cover Image URL</label><input type="text" id="postImage" placeholder="Paste link..."></div>
+                <div class="form-group"><label>Headline Title</label><input type="text" id="postTitle" placeholder="Match breakdown summary..."></div>
+                <div class="form-row-3">
+                    <div class="form-group"><label>Home</label><input type="text" id="homeTeam" placeholder="ARS"></div>
+                    <div class="form-group"><label>Score</label><input type="text" id="scoreLine" placeholder="0 - 0"></div>
+                    <div class="form-group"><label>Away</label><input type="text" id="awayTeam" placeholder="CHE"></div>
                 </div>
-                <div class="form-group"><label>Full Analysis Narrative Text</label><textarea id="postDesc" rows="4" placeholder="Deep match summary detail..."></textarea></div>
-                <button class="publish-btn" onclick="publishCard()">Publish Story</button>
+                <div class="form-group"><label>Narrative Breakdown</label><textarea id="postDesc" rows="3" placeholder="Deep details..."></textarea></div>
+                <button class="publish-btn" onclick="publishCard()">Publish Story Live</button>
             </div>
         </div>
     </div>
 
-    <div id="offlineOverlay">
-        <h2 style="color: var(--accent-yellow);">🔴 FIELD OFFLINE</h2>
-        <div style="font-size: 18px; margin-bottom: 12px;">Score: <span id="fallbackScore" style="color: #00ffcc;">0</span></div>
-        <canvas id="fallbackCanvas" width="400" height="500" style="background:#111122; border:2px solid var(--accent-yellow); max-width: 90vw;"></canvas>
-        <p style="color: #656e7b; font-size: 13px; margin-top:12px;">No network detected! Drag or use mouse to guide your racer.</p>
-    </div>
-
-    <div class="reader-view" id="articleReader" onclick="closeReader(event)">
+    <div class="reader-view" id="articleReader" onclick="if(event.target.id==='articleReader') this.style.display='none';">
         <div class="reader-card">
             <div class="reader-hero" id="readerHero"></div>
             <div class="reader-body">
-                <span class="badge" id="readerBadge" style="position:static;"></span>
-                <h2 id="readerTitle" style="margin: 15px 0;"></h2>
-                <div id="readerMatch" style="margin-bottom: 20px;"></div>
-                <p id="readerText" style="line-height:1.7;"></p>
+                <h2 id="readerTitle" style="margin: 0 0 10px 0; font-size:20px;"></h2>
+                <div id="readerMatch" style="margin-bottom: 15px;"></div>
+                <p id="readerText" style="line-height:1.6; font-size:14px; margin:0; color:var(--text-primary);"></p>
                 <button class="close-btn" onclick="document.getElementById('articleReader').style.display='none'">Close</button>
             </div>
         </div>
     </div>
 
 <script>
-    let db;
-    let currentRating = 5;
-    let database = [];
-    let reviewsList = [];
+    // Set your admin access password right here sha!
+    const ADMIN_PASSWORD = "tega"; 
 
-    // Initialize Local Secure Browser Database (IndexedDB)
-    const request = indexedDB.open("TegaDatabase", 1);
-    request.onupgradeneeded = function(e) {
-        let dbInstance = e.target.result;
-        if (!dbInstance.objectStoreNames.contains("content")) {
-            dbInstance.createObjectStore("content", { keyPath: "id" });
+    function verifyAdminGate() {
+        const input = document.getElementById("gatePassword").value;
+        if(input === ADMIN_PASSWORD) {
+            document.getElementById("lockGate").style.display = "none";
+            document.getElementById("adminPanelDesk").style.display = "block";
+        } else {
+            alert("Unauthorized Pin Attempt!");
         }
-    };
-    request.onsuccess = function(e) {
-        db = e.target.result;
-        loadSavedData();
-    };
+    }
 
     function switchTab(tabId) {
         const loader = document.getElementById("preloader");
@@ -277,56 +289,21 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
-            if(event) event.currentTarget.classList.add('active');
+            event.currentTarget.classList.add('active');
             loader.style.opacity = "0";
             setTimeout(() => { loader.style.display = "none"; }, 300);
-        }, 200);
+        }, 300);
     }
 
-    function setStar(rating) {
-        currentRating = rating;
-        const stars = document.querySelectorAll('#starInput .star');
-        stars.forEach((star, idx) => {
-            if (idx < rating) star.classList.add('selected');
-            else star.classList.remove('selected');
-        });
-    }
-
-    function loadSavedData() {
-        const transaction = db.transaction(["content"], "readonly");
-        const store = transaction.objectStore("content");
-        
-        const getStories = store.get("stories");
-        getStories.onsuccess = function() {
-            database = getStories.result ? getStories.result.data : [
-                {
-                    tag: "Tactics", img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2",
-                    title: "Welcome to T.E.G.A Live Feed", home: "Live", score: "0 - 0", away: "Arena",
-                    desc: "Your setup is fully optimized. Use the Creator Engine to post custom tactical match cards!"
-                }
-            ];
-            renderFeed();
-        };
-
-        const getReviews = store.get("reviews");
-        getReviews.onsuccess = function() {
-            reviewsList = getReviews.result ? getReviews.result.data : [];
-            renderReviews();
-        };
-
-        // Turn off loading screen instantly once local database loads
-        setTimeout(() => {
-            const loader = document.getElementById("preloader");
-            loader.style.opacity = "0";
-            setTimeout(() => { loader.style.display = "none"; }, 400);
-        }, 200);
-    }
-
-    function saveData(key, dataArray) {
-        const transaction = db.transaction(["content"], "readwrite");
-        const store = transaction.objectStore("content");
-        store.put({ id: key, data: dataArray });
-    }
+    let database = JSON.parse(localStorage.getItem('tega_posts')) || [
+        {
+            tag: "Tactics",
+            img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2",
+            title: "Portugal reach Round of 16 after dramatic tactical turnaround over Croatia",
+            home: "Portugal", score: "2 - 1", away: "Croatia",
+            desc: "An in-depth review of the second-half spatial control adjustment. The midfield diamond structural pivot unlocked key passing vertical corridors."
+        }
+    ];
 
     function renderFeed() {
         const newsGrid = document.getElementById("newsGrid");
@@ -338,11 +315,14 @@
             card.className = "sub-card";
             card.onclick = () => openReader(index);
             card.innerHTML = `
-                <div class="image-wrapper"><span class="badge">${post.tag}</span><img src="${post.img || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2'}"></div>
+                <div class="image-wrapper">
+                    <span class="badge">${post.tag}</span>
+                    <img src="${post.img || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2'}" alt="Media Cover">
+                </div>
                 <div class="card-content">
                     <h4 class="card-title">${post.title}</h4>
-                    <p class="card-desc">${post.desc.substring(0, 110)}...</p>
-                    <div class="match-strip"><span>${post.home}</span> <span class="vs-score">${post.score}</span> <span>${post.away}</span></div>
+                    <p class="card-desc">${post.desc.substring(0, 80)}...</p>
+                    <div class="match-strip"><span>${post.home}</span><span class="vs-score">${post.score}</span><span>${post.away}</span></div>
                 </div>
             `;
             newsGrid.insertBefore(card.cloneNode(true), newsGrid.firstChild);
@@ -355,21 +335,6 @@
         });
     }
 
-    function renderReviews() {
-        const container = document.getElementById("reviewsContainer");
-        container.innerHTML = "";
-        reviewsList.forEach(rev => {
-            const div = document.createElement("div");
-            div.className = "review-item";
-            let starsString = "★".repeat(rev.stars) + "☆".repeat(5 - rev.stars);
-            div.innerHTML = `
-                <div class="review-stars">${starsString}</div>
-                <strong>${rev.name || "Anonymous"}</strong>: <span style="color:var(--text-primary); font-size:14px;">${rev.text}</span>
-            `;
-            container.insertBefore(div, container.firstChild);
-        });
-    }
-
     function publishCard() {
         const tag = document.getElementById("postTag").value || "News";
         const img = document.getElementById("postImage").value;
@@ -379,102 +344,36 @@
         const away = document.getElementById("awayTeam").value;
         const desc = document.getElementById("postDesc").value;
 
-        if(!title || !home || !away || !score || !desc) { alert("Fill all required fields!"); return; }
+        if(!title || !home || !away || !score || !desc) { alert("Complete details!"); return; }
 
         database.push({ tag, img, title, home, score, away, desc });
-        saveData("stories", database);
+        localStorage.setItem('tega_posts', JSON.stringify(database));
+        renderFeed();
 
-        document.getElementById("postTitle").value = "";
+        // Clear input details
+        document.getElementById("postTag").value = ""; document.getElementById("postImage").value = "";
+        document.getElementById("postTitle").value = ""; document.getElementById("homeTeam").value = "";
+        document.getElementById("scoreLine").value = ""; document.getElementById("awayTeam").value = "";
         document.getElementById("postDesc").value = "";
         switchTab('news');
-        renderFeed();
-    }
-
-    function submitReview() {
-        const name = document.getElementById("reviewerName").value;
-        const text = document.getElementById("reviewText").value;
-        if(!text) { alert("Please write a comment!"); return; }
-
-        reviewsList.push({ stars: currentRating, name: name, text: text });
-        saveData("reviews", reviewsList);
-
-        document.getElementById("reviewerName").value = "";
-        document.getElementById("reviewText").value = "";
-        setStar(5);
-        renderReviews();
     }
 
     function openReader(index) {
         const item = database[index];
         document.getElementById("readerHero").innerHTML = `<img src="${item.img || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2'}">`;
-        document.getElementById("readerBadge").innerText = item.tag;
         document.getElementById("readerTitle").innerText = item.title;
-        document.getElementById("readerMatch").innerHTML = `<div class="match-strip"><span>${item.home}</span> <span class="vs-score">${item.score}</span> <span>${item.away}</span></div>`;
+        document.getElementById("readerMatch").innerHTML = `<div class="match-strip"><span>${item.home}</span><span class="vs-score">${item.score}</span><span>${item.away}</span></div>`;
         document.getElementById("readerText").innerText = item.desc;
         document.getElementById("articleReader").style.display = "flex";
     }
 
-    function closeReader(e) { if(e.target.id === "articleReader") document.getElementById("articleReader").style.display = "none"; }
-
-    // --- Offline Arcade Mechanics ---
-    function checkNetworkStatus() {
-        const portal = document.getElementById("portalView");
-        const fallback = document.getElementById("offlineOverlay");
-        if (navigator.onLine) {
-            portal.style.display = "block";
-            fallback.style.display = "none";
-        } else {
-            portal.style.display = "none";
-            fallback.style.display = "flex";
-            ignition();
-        }
-    }
-    window.addEventListener('online', checkNetworkStatus);
-    window.addEventListener('offline', checkNetworkStatus);
-
-    let activeArena = false;
-    function ignition() {
-        if(activeArena) return;
-        activeArena = true;
-        const cvs = document.getElementById("fallbackCanvas");
-        const cxx = cvs.getContext("2d");
-        const tracker = document.getElementById("fallbackScore");
-        let pts = 0; let carX = cvs.width/2; let targetCarX = carX; let trafficFleet = [];
-
-        cvs.addEventListener("touchmove", e => {
-            const boundary = cvs.getBoundingClientRect();
-            targetCarX = (e.touches[0].clientX - boundary.left) * (cvs.width / boundary.width);
-        });
-        cvs.addEventListener("mousemove", e => {
-            const boundary = cvs.getBoundingClientRect();
-            targetCarX = (e.clientX - boundary.left) * (cvs.width / boundary.width);
-        });
-
-        function play() {
-            if(navigator.onLine) { activeArena = false; return; }
-            requestAnimationFrame(play);
-            cxx.clearRect(0,0,cvs.width,cvs.height);
-            carX += (targetCarX - carX) * 0.2;
-            cxx.fillStyle = "#facc15";
-            cxx.fillRect(carX-15, cvs.height-70, 30, 45);
-
-            if(Math.random() < 0.03 && trafficFleet.length < 3) {
-                trafficFleet.push({x: Math.random()*(cvs.width-40)+20, y: -60});
-            }
-            trafficFleet.forEach((enemy, idx) => {
-                enemy.y += 6;
-                cxx.fillStyle = "#ff007f";
-                cxx.fillRect(enemy.x, enemy.y, 30, 45);
-                if(enemy.y > cvs.height - 70 && enemy.y < cvs.height - 20 && Math.abs(enemy.x - carX) < 25) { pts = 0; enemy.y = -60; }
-                if(enemy.y > cvs.height) { trafficFleet.splice(idx, 1); pts += 10; tracker.innerText = pts; }
-            });
-        }
-        play();
-    }
-
     window.addEventListener('load', () => {
-        setStar(5);
-        checkNetworkStatus();
+        renderFeed();
+        setTimeout(() => {
+            const loader = document.getElementById("preloader");
+            loader.style.opacity = "0";
+            setTimeout(() => { loader.style.display = "none"; }, 300);
+        }, 800);
     });
 </script>
 </body>
